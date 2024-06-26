@@ -1,29 +1,25 @@
 {
-  "repository": "https://github.com/vercel/examples.git",
-  "license": "MIT",
+  "name": "blockchain-test-dapp",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
-    "build:main": "turbo run build --filter=main...",
-    "build:docs": "turbo run build --filter=docs...",
-    "dev": "turbo run dev",
-    "start": "turbo run start",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "lint": "turbo run lint",
-    "format": "prettier --write .",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "turbo run build --filter=main... && changeset publish"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "ui:add": "pnpm --filter ui ui:add",
+    "format": "prettier --write ."
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.1",
-    "@types/node": "^18.16.16",
-    "prettier": "^2.8.8",
-    "turbo": "^1.10.1"
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "prettier": "^3.1.1",
+    "turbo": "latest"
   },
-  "packageManager": "pnpm@7.15.0"
+  "packageManager": "pnpm@8.9.0",
+  "engines": {
+    "node": ">=18"
+  }
 }
