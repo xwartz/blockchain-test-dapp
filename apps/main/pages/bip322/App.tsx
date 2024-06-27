@@ -1,28 +1,149 @@
 import { ThemeProvider } from '@/components/theme-provider'
+import { getProvider } from '@/utils/providers'
+import { Label, Button, useToast, Input, Separator } from '@ui/components'
+import { Cable, Unplug } from 'lucide-react'
+import { useState } from 'react'
 
+const provider = getProvider()
 function App() {
+  const { toast } = useToast()
+  const [connected, setConnected] = useState(false)
+  const [network, setNetwork] = useState('')
+  const [address, setAddress] = useState('')
+  const [balance, setBalance] = useState('')
+
+  const [msg, setMsg] = useState('Hello World')
+  const [signature, setSignature] = useState('')
+
+  const onConnect = async () => {
+    try {
+      setConnected(true)
+      await provider.connectWallet()
+      const network = await provider.getNetwork()
+      setNetwork(network)
+      const address = await provider.getAddress()
+      setAddress(address)
+      const balance = await provider.getBalance()
+      setBalance(`${balance / 1e8} BTC`)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: 'connect failed',
+          description: error.message,
+        })
+      }
+    }
+  }
+
+  const onDisconnect = () => {
+    setConnected(false)
+    setNetwork('')
+    setAddress('')
+    setBalance('')
+  }
+
+  const onSignMsg = async () => {
+    try {
+      const result = await provider.signMessageBIP322(msg)
+      setSignature(result)
+      toast({
+        title: 'Sign Message Success',
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: 'Sign Message Failed',
+          description: error.message,
+        })
+      }
+    }
+  }
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="text-center m-6">
-        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          BIP322
-        </h2>
-        <a
-          className="text-black/60 hover:text-black/80"
-          href="https://github.com/bitcoin/bips/blob/master/bip322.mediawiki"
-          target="_blank"
-        >
-          github.com/bitcoin/bip322
-        </a>
-        <blockquote className="border-l-2 p-6 italic">
-          A standard for interoperable signed messages based on the Bitcoin
-          Script format, either for proving fund availability, or committing to
-          a message as the intended recipient of funds sent to the invoice
-          address.
-        </blockquote>
+      <Header />
+      <Separator />
+
+      <div className="p-10 text-center" style={{ maxWidth: '100%' }}>
+        {!connected && (
+          <Button onClick={onConnect}>
+            <Cable className="mr-2 h-4 w-4" /> Connect Wallet
+          </Button>
+        )}
+        {connected && (
+          <Button variant="destructive" onClick={onDisconnect}>
+            <Unplug className="mr-2 h-4 w-4" /> Disconnect Wallet
+          </Button>
+        )}
+
+        <div className="m-10">
+          <h3 className="text-xl font-semibold">Wallet Info</h3>
+          <div className="mt-3">
+            <p>Network: </p>
+            <code className="rounded bg-muted text-sm break-all">
+              {network}
+            </code>
+          </div>
+          <div className="mt-3">
+            <p>Address: </p>
+            <code className="rounded bg-muted text-sm break-all">
+              {address}
+            </code>
+          </div>
+          <div className="mt-3">
+            <p>Balance: </p>
+            <code className="rounded bg-muted text-sm break-all">
+              {balance}
+            </code>
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="m-10">
+          <h3 className="text-xl font-semibold">Sign Message</h3>
+          <div className="mt-3 space-y-3">
+            <Label htmlFor="message">Message: </Label>
+            <Input
+              id="message"
+              placeholder="please enter message"
+              defaultValue="Hello World"
+              onChange={(e) => setMsg(e.target.value)}
+            />
+            <Button onClick={onSignMsg}>Sign</Button>
+          </div>
+          <div className="mt-3">
+            <p>Signature: </p>
+            <code className="rounded bg-muted text-sm break-all">
+              {signature}
+            </code>
+          </div>
+        </div>
       </div>
     </ThemeProvider>
   )
 }
 
 export default App
+
+function Header() {
+  return (
+    <div className="text-center m-6">
+      <h2 className="border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        BIP-322
+      </h2>
+      <a
+        className="text-sm text-muted-foreground"
+        href="https://github.com/bitcoin/bips/blob/master/bip322.mediawiki"
+        target="_blank"
+      >
+        github.com/bitcoin/bip322
+      </a>
+      <blockquote className="text-xl text-muted-foreground">
+        A standard for interoperable signed messages based on the Bitcoin Script
+        format, either for proving fund availability, or committing to a message
+        as the intended recipient of funds sent to the invoice address.
+      </blockquote>
+    </div>
+  )
+}

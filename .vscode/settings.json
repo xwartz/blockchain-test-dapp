@@ -3,5 +3,17 @@
     {
       "mode": "auto"
     }
+  ],
+  "cSpell.words": [
+    "decodepsbt",
+    "lucide",
+    "okxwallet",
+    "psbt",
+    "psbts",
+    "sonner",
+    "txid",
+    "UTXO",
+    "Utxos",
+    "vout"
   ]
 }
