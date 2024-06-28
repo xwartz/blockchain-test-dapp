@@ -1,11 +1,11 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import { getProvider } from '@/utils/providers'
+import { useProvider } from '@/utils/providers'
 import { Label, Button, useToast, Input, Separator } from '@ui/components'
 import { Cable, Unplug } from 'lucide-react'
 import { useState } from 'react'
 
-const provider = getProvider()
 function App() {
+  const provider = useProvider()
   const { toast } = useToast()
   const [connected, setConnected] = useState(false)
   const [network, setNetwork] = useState('')
@@ -18,13 +18,13 @@ function App() {
   const onConnect = async () => {
     try {
       setConnected(true)
-      await provider.connectWallet()
-      const network = await provider.getNetwork()
-      setNetwork(network)
-      const address = await provider.getAddress()
-      setAddress(address)
-      const balance = await provider.getBalance()
-      setBalance(`${balance / 1e8} BTC`)
+      await provider?.connectWallet()
+      const network = await provider?.getNetwork()
+      setNetwork(network ?? '')
+      const address = await provider?.getAddress()
+      setAddress(address ?? '')
+      const balance = await provider?.getBalance()
+      setBalance(`${(balance ?? 0) / 1e8} BTC`)
     } catch (error) {
       if (error instanceof Error) {
         toast({
@@ -44,8 +44,8 @@ function App() {
 
   const onSignMsg = async () => {
     try {
-      const result = await provider.signMessageBIP322(msg)
-      setSignature(result)
+      const result = await provider?.signMessageBIP322(msg)
+      setSignature(result ?? '')
       toast({
         title: 'Sign Message Success',
       })
@@ -64,7 +64,7 @@ function App() {
       <Header />
       <Separator />
 
-      <div className="p-10 text-center" style={{ maxWidth: '100%' }}>
+      <div className="p-5 text-center" style={{ maxWidth: '100%' }}>
         {!connected && (
           <Button onClick={onConnect}>
             <Cable className="mr-2 h-4 w-4" /> Connect Wallet
@@ -76,21 +76,21 @@ function App() {
           </Button>
         )}
 
-        <div className="m-10">
+        <div className="m-5">
           <h3 className="text-xl font-semibold">Wallet Info</h3>
-          <div className="mt-3">
+          <div className="mt-2">
             <p>Network: </p>
             <code className="rounded bg-muted text-sm break-all">
               {network}
             </code>
           </div>
-          <div className="mt-3">
+          <div className="mt-2">
             <p>Address: </p>
             <code className="rounded bg-muted text-sm break-all">
               {address}
             </code>
           </div>
-          <div className="mt-3">
+          <div className="mt-2">
             <p>Balance: </p>
             <code className="rounded bg-muted text-sm break-all">
               {balance}
@@ -100,9 +100,9 @@ function App() {
 
         <Separator />
 
-        <div className="m-10">
+        <div className="m-5">
           <h3 className="text-xl font-semibold">Sign Message</h3>
-          <div className="mt-3 space-y-3">
+          <div className="mt-2 space-y-2">
             <Label htmlFor="message">Message: </Label>
             <Input
               id="message"
@@ -112,7 +112,7 @@ function App() {
             />
             <Button onClick={onSignMsg}>Sign</Button>
           </div>
-          <div className="mt-3">
+          <div className="mt-2">
             <p>Signature: </p>
             <code className="rounded bg-muted text-sm break-all">
               {signature}
@@ -139,7 +139,7 @@ function Header() {
       >
         github.com/bitcoin/bip322
       </a>
-      <blockquote className="text-xl text-muted-foreground">
+      <blockquote className="text-sm text-muted-foreground">
         A standard for interoperable signed messages based on the Bitcoin Script
         format, either for proving fund availability, or committing to a message
         as the intended recipient of funds sent to the invoice address.
