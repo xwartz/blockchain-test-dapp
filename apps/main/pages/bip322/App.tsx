@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider'
 import { useProvider } from '@/utils/providers'
-import { Label, Button, useToast, Input, Separator } from '@ui/components'
+import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
 import { Cable, Unplug } from 'lucide-react'
 import { useState } from 'react'
 
@@ -100,13 +100,13 @@ function App() {
 
         <Separator />
 
-        <div className="m-5">
+        <div className="m-5 text-center">
           <h3 className="text-xl font-semibold">Sign Message</h3>
-          <div className="mt-2 space-y-2">
+          <div className="mt-2 grid w-full gap-2 grid w-full max-w-sm mx-auto">
             <Label htmlFor="message">Message: </Label>
-            <Input
+            <Textarea
+              placeholder="Type your message here."
               id="message"
-              placeholder="please enter message"
               defaultValue="Hello World"
               onChange={(e) => setMsg(e.target.value)}
             />
