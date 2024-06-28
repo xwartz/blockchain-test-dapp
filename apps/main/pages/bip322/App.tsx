@@ -1,5 +1,7 @@
 import { ThemeProvider } from '@/components/theme-provider'
+import { verifyMessageOfBIP322Simple } from '@/utils/bip322/simple'
 import { useProvider } from '@/utils/providers'
+import { Network } from '@/utils/providers/base'
 import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
 import { Cable, Unplug } from 'lucide-react'
 import { useState } from 'react'
@@ -8,12 +10,14 @@ function App() {
   const provider = useProvider()
   const { toast } = useToast()
   const [connected, setConnected] = useState(false)
-  const [network, setNetwork] = useState('')
+  const [network, setNetwork] = useState<Network | string>(Network.SIGNET)
   const [address, setAddress] = useState('')
   const [balance, setBalance] = useState('')
 
   const [msg, setMsg] = useState('Hello World')
   const [signature, setSignature] = useState('')
+
+  const [recovery, setRecovery] = useState('')
 
   const onConnect = async () => {
     try {
@@ -54,6 +58,25 @@ function App() {
         toast({
           title: 'Sign Message Failed',
           description: error.message,
+        })
+      }
+    }
+  }
+
+  const onVerify = async () => {
+    try {
+      const result = verifyMessageOfBIP322Simple(
+        address,
+        msg,
+        signature,
+        network as Network,
+      )
+      setRecovery(result ? 'Success' : 'Failed')
+    } catch (error) {
+      if (error instanceof Error) {
+        setRecovery(error.message)
+        toast({
+          title: 'Verify Failed',
         })
       }
     }
@@ -116,6 +139,17 @@ function App() {
             <p>Signature: </p>
             <code className="rounded bg-muted text-sm break-all">
               {signature}
+            </code>
+          </div>
+          <div className="mt-2 grid w-full gap-2 grid w-full max-w-sm mx-auto">
+            <Button variant="outline" onClick={onVerify}>
+              Verify
+            </Button>
+          </div>
+          <div className="mt-2">
+            <p>Recovery result: </p>
+            <code className="rounded bg-muted text-sm break-all">
+              {recovery}
             </code>
           </div>
         </div>

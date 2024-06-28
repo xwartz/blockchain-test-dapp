@@ -6,14 +6,22 @@
   ],
   "cSpell.words": [
     "decodepsbt",
+    "decompile",
+    "ecpair",
     "lucide",
+    "msghash",
     "okxwallet",
+    "prevout",
     "psbt",
     "psbts",
+    "PWPKH",
+    "regtest",
+    "schnorr",
     "sonner",
     "txid",
     "UTXO",
     "Utxos",
+    "varuint",
     "vout"
   ]
 }
