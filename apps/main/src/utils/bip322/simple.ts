@@ -2,6 +2,7 @@ import * as bitcoin from 'bitcoinjs-lib'
 import ECPairFactory from 'ecpair'
 import * as ecc from '@bitcoin-js/tiny-secp256k1-asmjs'
 import { Network } from '../providers/base'
+import { toPsbtNetwork } from '../network/transport'
 
 bitcoin.initEccLib(ecc)
 const ECPair = ECPairFactory(ecc)
@@ -42,16 +43,6 @@ export function verifyMessageOfBIP322Simple(
     )
   }
   return false
-}
-
-function toPsbtNetwork(networkType: Network) {
-  if (networkType === Network.MAINNET) {
-    return bitcoin.networks.bitcoin
-  }
-  if (networkType === Network.TESTNET || networkType === Network.SIGNET) {
-    return bitcoin.networks.testnet
-  }
-  return bitcoin.networks.regtest
 }
 
 function bip0322_hash(message: string) {

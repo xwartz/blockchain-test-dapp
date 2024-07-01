@@ -39,12 +39,66 @@ function validateAddressUrl(address: string): URL {
   return new URL(`${mempoolAPI}v1/validate-address/${address}`)
 }
 
+
+type DecodePsbtResult = {
+  tx: {
+    txid: string
+    hash: string
+    version: number
+    size: number
+    vsize: number
+    weight: number
+    locktime: number
+    vin: Array<{
+      txid: string
+      vout: 0
+      scriptSig: {
+        asm: string
+        hex: string
+      }
+      sequence: number
+    }>
+    vout: Array<{
+      value: number
+      n: number
+      scriptPubKey: {
+        asm: string
+        hex: string
+        reqSigs: number
+        type: string
+        addresses: string[]
+      }
+    }>
+  }
+  global_xpubs: Array<unknown>
+  psbt_version: 0 | 2
+  proprietary: Array<unknown>
+  inputs: Array<{
+    witness_utxo: {
+      amount: number
+      scriptPubKey: {
+        asm: string
+        desc: string
+        hex: string
+        address: string
+        type: string
+      }
+    }
+    final_scriptwitness: string[]
+    taproot_key_path_sig: string
+    taproot_internal_key: string
+  }>
+  outputs: Array<unknown>
+  fee: number
+}
 /**
  * decode psbt tx
  * @param psbt - The hex string corresponding to the full transaction.
  * @returns A promise that resolves to the response message.
  */
-export async function decodePsbt(psbt: string): Promise<{ result: object }> {
+export async function decodePsbt(
+  psbt: string,
+): Promise<{ result: DecodePsbtResult }> {
   const data = {
     jsonrpc: '2.0',
     method: 'decodepsbt',

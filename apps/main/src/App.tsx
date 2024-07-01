@@ -21,6 +21,9 @@ function App() {
             <li>
               <a href="./pages/bip322/">BIP-322</a>
             </li>
+            <li>
+              <a href="./pages/bip370/">BIP-370</a>
+            </li>
           </ul>
         </div>
       </div>
