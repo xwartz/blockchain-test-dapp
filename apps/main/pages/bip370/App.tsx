@@ -133,7 +133,7 @@ function App() {
 
         <div className="m-5 text-center">
           <h3 className="text-xl font-semibold">Sign PSBT</h3>
-          <div className="mt-2 grid w-full gap-2 grid w-full max-w-sm mx-auto">
+          <div className="mt-2 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
             <Label htmlFor="message">PSBT Hex: </Label>
             <Textarea
               placeholder="Type your PSBT Hex here."
@@ -142,25 +142,25 @@ function App() {
               onChange={onChangePsbt}
             />
             <Button onClick={onSign}>Sign</Button>
+            <div className="mt-2">
+              <p>Signature: </p>
+              <code className="rounded bg-muted text-sm break-all">
+                {signature}
+              </code>
+            </div>
           </div>
-          <div className="mt-2">
-            <p>Signature: </p>
-            <code className="rounded bg-muted text-sm break-all">
-              {signature}
-            </code>
-          </div>
-          <div className="mt-2 grid w-full gap-2 grid w-full max-w-sm mx-auto">
+          <div className="mt-2 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
             <Button variant="outline" onClick={onDecode}>
               Decode
             </Button>
-          </div>
-          <div className="mt-2">
-            <p className="mb-2">decode result(local): </p>
-            <Textarea defaultValue={decodeRes} rows={5} />
-          </div>
-          <div className="mt-2">
-            <p className="mb-2">decode result(node): </p>
-            <Textarea defaultValue={decodeResFromNode} rows={5} />
+            <div className="mt-2">
+              <p className="mb-2">decode result(local): </p>
+              <Textarea defaultValue={decodeRes} rows={15} />
+            </div>
+            <div className="mt-2">
+              <p className="mb-2">decode result(node): </p>
+              <Textarea defaultValue={decodeResFromNode} rows={15} />
+            </div>
           </div>
         </div>
       </div>
