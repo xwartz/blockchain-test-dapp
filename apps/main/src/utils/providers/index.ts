@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { WalletProvider } from './base'
 import { OKXWallet } from './okx'
 import { imTokenWallet } from './imToken'
+import { OneKeyWallet } from './oneKey'
 
 export const createProvider = (): WalletProvider | null => {
   if (window.bitcoin) {
@@ -9,6 +10,9 @@ export const createProvider = (): WalletProvider | null => {
   }
   if (window.okxwallet) {
     return new OKXWallet()
+  }
+  if (window.$onekey) {
+    return new OneKeyWallet()
   }
   return null
 }

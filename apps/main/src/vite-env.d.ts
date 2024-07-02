@@ -14,5 +14,6 @@ interface ImportMeta {
 
 interface Window {
   okxwallet: WalletProvider
+  $onekey: WalletProvider
   bitcoin: WalletProvider
 }
