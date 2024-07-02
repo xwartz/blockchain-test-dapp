@@ -28,6 +28,7 @@ export enum Network {
   MAINNET = 'mainnet',
   TESTNET = 'testnet',
   SIGNET = 'signet',
+  REGTEST = 'regtest',
 }
 
 // WalletInfo is a structure defining attributes for a wallet

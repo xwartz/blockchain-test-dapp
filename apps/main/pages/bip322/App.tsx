@@ -1,5 +1,8 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import { verifyMessageOfBIP322Simple } from '@/utils/bip322/simple'
+import {
+  genPsbtOfBIP322Simple,
+  verifyMessageOfBIP322Simple,
+} from '@/utils/bip322/simple'
 import { useProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
 import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
@@ -13,6 +16,8 @@ function App() {
   const [network, setNetwork] = useState<Network | string>(Network.SIGNET)
   const [address, setAddress] = useState('')
   const [balance, setBalance] = useState('')
+
+  const [psbt, setPsbt] = useState('')
 
   const [msg, setMsg] = useState('Hello World')
   const [signature, setSignature] = useState('')
@@ -48,6 +53,12 @@ function App() {
 
   const onSignMsg = async () => {
     try {
+      const psbt = genPsbtOfBIP322Simple({
+        message: msg,
+        address,
+        networkType: network as Network,
+      })
+      setPsbt(psbt.toHex())
       const result = await provider?.signMessageBIP322(msg)
       setSignature(result ?? '')
       toast({
@@ -134,6 +145,10 @@ function App() {
               onChange={(e) => setMsg(e.target.value)}
             />
             <Button onClick={onSignMsg}>Sign</Button>
+          </div>
+          <div className="mt-2">
+            <p>Psbt: </p>
+            <code className="rounded bg-muted text-sm break-all">{psbt}</code>
           </div>
           <div className="mt-2">
             <p>Signature: </p>

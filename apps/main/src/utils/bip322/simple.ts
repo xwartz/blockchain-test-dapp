@@ -97,6 +97,7 @@ function verifySignatureOfBIP322Simple_P2TR(
     },
   })
   psbtToSign.addOutput({ script: Buffer.from('6a', 'hex'), value: 0 })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tapKeyHash = (psbtToSign as any).__CACHE.__TX.hashForWitnessV1(
     0,
     [outputScript],
@@ -156,4 +157,52 @@ function verifySignatureOfBIP322Simple_P2PWPKH(
     ],
   })
   return psbtToSign.validateSignaturesOfAllInputs(validator)
+}
+
+export function genPsbtOfBIP322Simple({
+  message,
+  address,
+  networkType,
+}: {
+  message: string
+  address: string
+  networkType: Network
+}) {
+  const outputScript = addressToScriptPk(address, networkType)
+
+  const prevoutHash = Buffer.from(
+    '0000000000000000000000000000000000000000000000000000000000000000',
+    'hex',
+  )
+  const prevoutIndex = 0xffffffff
+  const sequence = 0
+  const scriptSig = Buffer.concat([
+    Buffer.from('0020', 'hex'),
+    Buffer.from(bip0322_hash(message), 'hex'),
+  ])
+
+  const txToSpend = new bitcoin.Transaction()
+  txToSpend.version = 0
+  txToSpend.addInput(prevoutHash, prevoutIndex, sequence, scriptSig)
+  txToSpend.addOutput(outputScript, 0)
+
+  const psbtToSign = new bitcoin.Psbt()
+  psbtToSign.setVersion(0)
+  psbtToSign.addInput({
+    hash: txToSpend.getHash(),
+    index: 0,
+    sequence: 0,
+    witnessUtxo: {
+      script: outputScript,
+      value: 0,
+    },
+  })
+  psbtToSign.addOutput({ script: Buffer.from('6a', 'hex'), value: 0 })
+
+  return psbtToSign
+}
+
+function addressToScriptPk(address: string, networkType: Network) {
+  const network = toPsbtNetwork(networkType)
+  return bitcoin.address.toOutputScript(address, network)
 }
