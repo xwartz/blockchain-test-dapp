@@ -1,28 +1,62 @@
-import { Psbt, Transaction, address, initEccLib } from 'bitcoinjs-lib'
+import * as bitcoin from 'bitcoinjs-lib'
 import * as ecc from '@bitcoin-js/tiny-secp256k1-asmjs'
 import { Network } from '../providers/base'
 import { toPsbtNetwork } from '../network/transport'
 import { decodePsbt } from '../mempool/api'
 
-initEccLib(ecc)
+bitcoin.initEccLib(ecc)
 
-const getAddressFromScript = (script: Buffer, network: Network) => {
+const getScriptPubKey = (script: Buffer, network: Network) => {
   const nw = toPsbtNetwork(network)
+  const chunks = bitcoin.script.decompile(script)
+  const opNumber = chunks?.[0]
+  let ascii = ''
+  const asm = bitcoin.script.toASM(chunks as Buffer[])
+  if (opNumber && opNumber === bitcoin.opcodes.OP_RETURN) {
+    const opReturnData = chunks.slice(1)
+    const asciiData = opReturnData.map((chunk) => {
+      if (Buffer.isBuffer(chunk)) {
+        return chunk.toString('ascii')
+      }
+      return chunk
+    })
+    ascii = asciiData.join('')
+  }
   try {
-    return address.fromOutputScript(script, nw)
+    return {
+      address: bitcoin.address.fromOutputScript(script, nw),
+      hex: script.toString('hex'),
+      asm,
+      ascii,
+    }
   } catch (e) {
-    return ''
+    return {
+      address: undefined,
+      hex: script.toString('hex'),
+      asm,
+      ascii,
+    }
   }
 }
 
 type Result = {
   tx: {
     inputs: {
-      address: string
+      scriptPubKey: {
+        address: string | undefined
+        hex: string
+        asm: string
+        ascii: string
+      }
       value: number
     }[]
     outputs: {
-      address: string
+      scriptPubKey: {
+        address: string | undefined
+        hex: string
+        asm: string
+        ascii: string
+      }
       value: number
     }[]
     txid: string
@@ -32,11 +66,11 @@ type Result = {
   version: number
 }
 export const decodeFromHex = (psbtHex: string, network: Network): Result => {
-  const psbt = Psbt.fromHex(psbtHex, {
+  const psbt = bitcoin.Psbt.fromHex(psbtHex, {
     network: toPsbtNetwork(network),
   })
 
-  const unSignedTx = Transaction.fromBuffer(psbt.data.getTransaction())
+  const unSignedTx = bitcoin.Transaction.fromBuffer(psbt.data.getTransaction())
   const txid = unSignedTx.getId()
   const vsize = unSignedTx.virtualSize()
 
@@ -56,17 +90,17 @@ export const decodeFromHex = (psbtHex: string, network: Network): Result => {
       return
     }
     const { script, value } = witnessUtxo
-    const address = getAddressFromScript(script, network)
+    const scriptPubKey = getScriptPubKey(script, network)
     result.tx.inputs.push({
-      address,
+      scriptPubKey,
       value: value / 1e8,
     })
   })
 
   psbt.txOutputs.forEach(({ script, value }) => {
-    const address = getAddressFromScript(script, network)
+    const scriptPubKey = getScriptPubKey(script, network)
     result.tx.outputs.push({
-      address,
+      scriptPubKey,
       value: value / 1e8,
     })
   })
@@ -80,7 +114,7 @@ export const decodeFromHex = (psbtHex: string, network: Network): Result => {
 }
 
 export const decodeByNode = async (psbtHex: string) => {
-  const psbt = Psbt.fromHex(psbtHex)
+  const psbt = bitcoin.Psbt.fromHex(psbtHex)
   const psbtBase64 = psbt.toBase64()
   const { result } = await decodePsbt(psbtBase64)
   return result
