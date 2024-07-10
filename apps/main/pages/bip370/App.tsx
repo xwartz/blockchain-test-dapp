@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@/components/theme-provider'
 import { useProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
-import { decodeByNode, decodeFromHex } from '@/utils/psbt/decode'
+import { decodeByNode, decodeFromHex, getSignature } from '@/utils/psbt/decode'
 import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
 import { Cable, Unplug } from 'lucide-react'
 import { SetStateAction, useState } from 'react'
@@ -53,7 +53,8 @@ function App() {
   const onSign = async () => {
     try {
       const result = await provider?.signPsbt(psbt)
-      setSignature(result ?? '')
+      const signature = getSignature(result ?? '')
+      setSignature(signature ?? '')
       toast({
         title: 'Sign Success',
       })

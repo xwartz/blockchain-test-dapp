@@ -119,3 +119,8 @@ export const decodeByNode = async (psbtHex: string) => {
   const { result } = await decodePsbt(psbtBase64)
   return result
 }
+
+export const getSignature = (signedHex: string) => {
+  const tx = bitcoin.Psbt.fromHex(signedHex).extractTransaction()
+  return tx.toHex()
+}

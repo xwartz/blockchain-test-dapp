@@ -16,4 +16,5 @@ interface Window {
   okxwallet: WalletProvider
   $onekey: WalletProvider
   bitcoin: WalletProvider
+  btcwallet: WalletProvider
 }

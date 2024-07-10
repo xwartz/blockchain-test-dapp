@@ -5,6 +5,9 @@ import { imTokenWallet } from './imToken'
 import { OneKeyWallet } from './oneKey'
 
 export const createProvider = (): WalletProvider | null => {
+  if (window.btcwallet) {
+    return window.btcwallet
+  }
   if (window.bitcoin) {
     return new imTokenWallet()
   }
