@@ -1,13 +1,12 @@
 import { ThemeProvider } from '@/components/theme-provider'
+import { toPsbtNetwork } from '@/utils/network/transport'
 import { useProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
+import { createPSBT } from '@/utils/psbt/create'
 import { decodeByNode, decodeFromHex, getSignature } from '@/utils/psbt/decode'
 import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
-import { Cable, Unplug } from 'lucide-react'
+import { Cable, Send, Unplug } from 'lucide-react'
 import { SetStateAction, useState } from 'react'
-
-const psbtStaking =
-  '70736274ff0100db02000000012c0502945546bb9003837d1d2aef32073f0e026c92b27a222dda74bf874e3cea0200000000fdffffff0350c3000000000000225120326c983f992efe39a22b5568b7565ca953116470e6d88177aa41eddf2ee044200000000000000000496a476262743400aff94eb65a2fe773a57c5bd54e62d8436a5467573565214028422b41bd43e29bc333bf065809ed12b162dc3c849f8cf65219125fdfde98770c2b285f04ff9960fa0008aaba0000000000225120ea20ffb077323528b8345c7fa517a2ebee1b52649ee2559a6d5ea87160b50b2e080803000001012ba56ebb0000000000225120ea20ffb077323528b8345c7fa517a2ebee1b52649ee2559a6d5ea87160b50b2e011720aff94eb65a2fe773a57c5bd54e62d8436a5467573565214028422b41bd43e29b00000000'
 
 function App() {
   const provider = useProvider()
@@ -16,9 +15,11 @@ function App() {
   const [network, setNetwork] = useState<Network | string>(Network.SIGNET)
   const [address, setAddress] = useState('')
   const [balance, setBalance] = useState('')
+  const [publicKey, setPublicKey] = useState<string>('')
 
-  const [psbt, setPSBT] = useState(psbtStaking)
+  const [psbt, setPSBT] = useState('')
   const [signature, setSignature] = useState('')
+  const [unspent, setUnspent] = useState('')
 
   const [decodeRes, setDecodeRes] = useState('')
   const [decodeResFromNode, setDecodeResFromNode] = useState('')
@@ -31,8 +32,12 @@ function App() {
       setNetwork(network ?? '')
       const address = await provider?.getAddress()
       setAddress(address ?? '')
+      const publicKey = await provider?.getPublicKeyHex()
+      setPublicKey(publicKey ?? '')
       const balance = await provider?.getBalance()
       setBalance(`${(balance ?? 0) / 1e8} BTC`)
+      const utxos = await provider?.getUtxos(address ?? '')
+      setUnspent(JSON.stringify(utxos, null, 2))
     } catch (error) {
       if (error instanceof Error) {
         toast({
@@ -47,7 +52,42 @@ function App() {
     setConnected(false)
     setNetwork('')
     setAddress('')
+    setPublicKey('')
     setBalance('')
+  }
+
+  const onChangeUnspent = (e: {
+    target: { value: SetStateAction<string> }
+  }) => {
+    setUnspent(e.target.value)
+    setPSBT('')
+    setSignature('')
+  }
+
+  const onGenerate = async () => {
+    try {
+      const netWorkFee = await provider?.getNetworkFees()
+      const feeRate = netWorkFee?.fastestFee
+      const result = createPSBT({
+        toAddress: address,
+        utxos: JSON.parse(unspent),
+        amount: 1000,
+        changeAddress: address,
+        network: toPsbtNetwork(network as Network),
+        feeRate: feeRate ?? 6,
+      })
+      setPSBT(result)
+      toast({
+        title: 'Generate Success',
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        toast({
+          title: 'Generate Failed',
+          description: err.message,
+        })
+      }
+    }
   }
 
   const onSign = async () => {
@@ -68,7 +108,9 @@ function App() {
     }
   }
 
-  const onChangePsbt = (e: { target: { value: SetStateAction<string> } }) => {
+  const onChangePsbtHex = (e: {
+    target: { value: SetStateAction<string> }
+  }) => {
     setPSBT(e.target.value)
     setSignature('')
     setDecodeRes('')
@@ -85,6 +127,23 @@ function App() {
       if (error instanceof Error) {
         toast({
           title: 'Decode Failed',
+          description: error.message,
+        })
+      }
+    }
+  }
+
+  const onSend = async () => {
+    try {
+      const result = await provider?.pushTx(signature)
+      console.log('send', result)
+      toast({
+        title: 'Send Success',
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: 'Send Failed',
           description: error.message,
         })
       }
@@ -108,39 +167,38 @@ function App() {
           </Button>
         )}
 
-        <div className="m-5">
-          <h3 className="text-xl font-semibold">Wallet Info</h3>
-          <div className="mt-2">
-            <p>Network: </p>
-            <code className="rounded bg-muted text-sm break-all">
-              {network}
-            </code>
-          </div>
-          <div className="mt-2">
-            <p>Address: </p>
-            <code className="rounded bg-muted text-sm break-all">
-              {address}
-            </code>
-          </div>
-          <div className="mt-2">
-            <p>Balance: </p>
-            <code className="rounded bg-muted text-sm break-all">
-              {balance}
-            </code>
-          </div>
-        </div>
-
+        <WalletInfo
+          network={network}
+          address={address}
+          publicKey={publicKey}
+          balance={balance}
+        />
         <Separator />
 
         <div className="m-5 text-center">
           <h3 className="text-xl font-semibold">Sign PSBT</h3>
-          <div className="mt-2 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
+
+          <div className="mt-4 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
+            <Label htmlFor="utxos">Generate PSBT</Label>
+            <Textarea
+              rows={10}
+              placeholder="Type your UTXOs here."
+              id="utxos"
+              defaultValue={unspent}
+              onChange={onChangeUnspent}
+            />
+            <Button variant="secondary" onClick={onGenerate}>
+              Generate
+            </Button>
+          </div>
+
+          <div className="mt-4 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
             <Label htmlFor="message">PSBT Hex: </Label>
             <Textarea
               placeholder="Type your PSBT Hex here."
               id="message"
-              defaultValue={psbtStaking}
-              onChange={onChangePsbt}
+              defaultValue={psbt}
+              onChange={onChangePsbtHex}
             />
             <Button onClick={onSign}>Sign</Button>
             <div className="mt-2">
@@ -149,8 +207,11 @@ function App() {
                 {signature}
               </code>
             </div>
+            <Button variant="destructive" onClick={onSend}>
+              <Send className="mr-2 h-4 w-4" /> Send
+            </Button>
           </div>
-          <div className="mt-2 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
+          <div className="mt-4 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
             <Button variant="outline" onClick={onDecode}>
               Decode
             </Button>
@@ -159,7 +220,7 @@ function App() {
               <Textarea defaultValue={decodeRes} rows={15} />
             </div>
             <div className="mt-2">
-              <p className="mb-2">decode result(node): </p>
+              <p className="mb-2">decode result(RPC Node): </p>
               <Textarea defaultValue={decodeResFromNode} rows={15} />
             </div>
           </div>
@@ -170,6 +231,40 @@ function App() {
 }
 
 export default App
+
+function WalletInfo({
+  network,
+  address,
+  publicKey,
+  balance,
+}: {
+  network: string
+  address: string
+  publicKey: string
+  balance: string
+}) {
+  return (
+    <div className="m-5">
+      <h3 className="text-xl font-semibold">Wallet Info</h3>
+      <div className="mt-2">
+        <p>Network: </p>
+        <code className="rounded bg-muted text-sm break-all">{network}</code>
+      </div>
+      <div className="mt-2">
+        <p>Address: </p>
+        <code className="rounded bg-muted text-sm break-all">{address}</code>
+      </div>
+      <div className="mt-2">
+        <p>Public Key: </p>
+        <code className="rounded bg-muted text-sm break-all">{publicKey}</code>
+      </div>
+      <div className="mt-2">
+        <p>Balance: </p>
+        <code className="rounded bg-muted text-sm break-all">{balance}</code>
+      </div>
+    </div>
+  )
+}
 
 function Header() {
   return (
