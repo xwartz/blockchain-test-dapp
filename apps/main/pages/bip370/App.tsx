@@ -1,3 +1,5 @@
+import { Cable, Send, Unplug } from 'lucide-react'
+import { SetStateAction, useState } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { toPsbtNetwork } from '@/utils/network/transport'
 import { useProvider } from '@/utils/providers'
@@ -5,8 +7,6 @@ import { Network } from '@/utils/providers/base'
 import { createPSBT } from '@/utils/psbt/create'
 import { decodeByNode, decodeFromHex, getSignature } from '@/utils/psbt/decode'
 import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
-import { Cable, Send, Unplug } from 'lucide-react'
-import { SetStateAction, useState } from 'react'
 
 function App() {
   const provider = useProvider()
@@ -94,6 +94,24 @@ function App() {
     try {
       const result = await provider?.signPsbt(psbt)
       const signature = getSignature(result ?? '')
+      setSignature(signature ?? '')
+      toast({
+        title: 'Sign Success',
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: 'Sign Failed',
+          description: error.message,
+        })
+      }
+    }
+  }
+
+  const onSignPsbts = async () => {
+    try {
+      const result = await provider?.signPsbts([psbt])
+      const signature = getSignature(result?.[0] ?? '')
       setSignature(signature ?? '')
       toast({
         title: 'Sign Success',
@@ -200,7 +218,10 @@ function App() {
               defaultValue={psbt}
               onChange={onChangePsbtHex}
             />
-            <Button onClick={onSign}>Sign</Button>
+            <Button onClick={onSign}>SignPsbt</Button>
+            <Button variant="secondary" onClick={onSignPsbts}>
+              SignPsbts
+            </Button>
             <div className="mt-2">
               <p>Signature: </p>
               <code className="rounded bg-muted text-sm break-all">
