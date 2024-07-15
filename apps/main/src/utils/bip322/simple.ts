@@ -35,7 +35,14 @@ export function verifyMessageOfBIP322Simple(
       networkType,
     )
   } else if (/^(bc1q|tb1q)/.test(address)) {
-    return verifySignatureOfBIP322Simple_P2PWPKH(
+    return verifySignatureOfBIP322Simple_P2WPKH(
+      address,
+      msg,
+      signature,
+      networkType,
+    )
+  } else if (/^(3|2)/.test(address)) {
+    return verifySignatureOfBIP322Simple_P2SH(
       address,
       msg,
       signature,
@@ -43,6 +50,107 @@ export function verifyMessageOfBIP322Simple(
     )
   }
   return false
+}
+
+function verifySignatureOfBIP322Simple_P2WPKH(
+  address: string,
+  msg: string,
+  sign: string,
+  networkType: Network = Network.MAINNET,
+) {
+  const network = toPsbtNetwork(networkType)
+  const outputScript = bitcoin.address.toOutputScript(address, network)
+
+  const txToSpend = createTxToSpend(msg, outputScript)
+
+  const data = Buffer.from(sign, 'base64')
+  const res = bitcoin.script.decompile(data.slice(1))
+
+  const psbtToSign = new bitcoin.Psbt()
+  psbtToSign.setVersion(0)
+  psbtToSign.addInput({
+    hash: txToSpend.getHash(),
+    index: 0,
+    sequence: 0,
+    witnessUtxo: {
+      script: outputScript,
+      value: 0,
+    },
+  })
+  psbtToSign.addOutput({ script: Buffer.from('6a', 'hex'), value: 0 })
+
+  psbtToSign.updateInput(0, {
+    partialSig: [
+      {
+        pubkey: res?.[1] as Buffer,
+        signature: res?.[0] as Buffer,
+      },
+    ],
+  })
+  return psbtToSign.validateSignaturesOfAllInputs(validator)
+}
+
+function verifySignatureOfBIP322Simple_P2SH(
+  address: string,
+  msg: string,
+  sign: string,
+  networkType: Network = Network.MAINNET,
+) {
+  const network = toPsbtNetwork(networkType)
+  const outputScript = bitcoin.address.toOutputScript(address, network)
+
+  const txToSpend = createTxToSpend(msg, outputScript)
+
+  const data = Buffer.from(sign, 'base64')
+  const res = bitcoin.script.decompile(data.slice(1))
+
+  const psbtToSign = new bitcoin.Psbt()
+  psbtToSign.setVersion(0)
+
+  const pubkey = res?.[1] as Buffer
+  const redeemScript = bitcoin.payments.p2wpkh({ pubkey }).output
+
+  psbtToSign.addInput({
+    hash: txToSpend.getHash(),
+    index: 0,
+    sequence: 0,
+    witnessUtxo: {
+      script: outputScript,
+      value: 0,
+    },
+    redeemScript,
+  })
+  psbtToSign.addOutput({ script: Buffer.from('6a', 'hex'), value: 0 })
+
+  psbtToSign.updateInput(0, {
+    partialSig: [
+      {
+        pubkey: pubkey,
+        signature: res?.[0] as Buffer,
+      },
+    ],
+  })
+  return psbtToSign.validateSignaturesOfAllInputs(validator)
+}
+
+function createTxToSpend(msg: string, outputScript: Buffer) {
+  const prevoutHash = Buffer.from(
+    '0000000000000000000000000000000000000000000000000000000000000000',
+    'hex',
+  )
+  const prevoutIndex = 0xffffffff
+  const sequence = 0
+  const scriptSig = Buffer.concat([
+    Buffer.from('0020', 'hex'),
+    Buffer.from(bip0322_hash(msg), 'hex'),
+  ])
+
+  const txToSpend = new bitcoin.Transaction()
+  txToSpend.version = 0
+  txToSpend.addInput(prevoutHash, prevoutIndex, sequence, scriptSig)
+  txToSpend.addOutput(outputScript, 0)
+
+  return txToSpend
 }
 
 function bip0322_hash(message: string) {
@@ -105,58 +213,6 @@ function verifySignatureOfBIP322Simple_P2TR(
     0,
   )
   return schnorrValidator(pubkey, tapKeyHash, signature)
-}
-
-function verifySignatureOfBIP322Simple_P2PWPKH(
-  address: string,
-  msg: string,
-  sign: string,
-  networkType: Network = Network.MAINNET,
-) {
-  const network = toPsbtNetwork(networkType)
-  const outputScript = bitcoin.address.toOutputScript(address, network)
-
-  const prevoutHash = Buffer.from(
-    '0000000000000000000000000000000000000000000000000000000000000000',
-    'hex',
-  )
-  const prevoutIndex = 0xffffffff
-  const sequence = 0
-  const scriptSig = Buffer.concat([
-    Buffer.from('0020', 'hex'),
-    Buffer.from(bip0322_hash(msg), 'hex'),
-  ])
-
-  const txToSpend = new bitcoin.Transaction()
-  txToSpend.version = 0
-  txToSpend.addInput(prevoutHash, prevoutIndex, sequence, scriptSig)
-  txToSpend.addOutput(outputScript, 0)
-
-  const data = Buffer.from(sign, 'base64')
-  const res = bitcoin.script.decompile(data.slice(1))
-
-  const psbtToSign = new bitcoin.Psbt()
-  psbtToSign.setVersion(0)
-  psbtToSign.addInput({
-    hash: txToSpend.getHash(),
-    index: 0,
-    sequence: 0,
-    witnessUtxo: {
-      script: outputScript,
-      value: 0,
-    },
-  })
-  psbtToSign.addOutput({ script: Buffer.from('6a', 'hex'), value: 0 })
-
-  psbtToSign.updateInput(0, {
-    partialSig: [
-      {
-        pubkey: res?.[1] as Buffer,
-        signature: res?.[0] as Buffer,
-      },
-    ],
-  })
-  return psbtToSign.validateSignaturesOfAllInputs(validator)
 }
 
 export function genPsbtOfBIP322Simple({
