@@ -35,12 +35,10 @@ function App() {
       const balance = await provider?.getBalance()
       setBalance(`${(balance ?? 0) / 1e8} BTC`)
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'connect failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'connect failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
@@ -65,12 +63,10 @@ function App() {
         title: 'Sign Message Success',
       })
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'Sign Message Failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'Sign Message Failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
@@ -84,12 +80,11 @@ function App() {
       )
       setRecovery(result ? 'Success' : 'Failed')
     } catch (error) {
-      if (error instanceof Error) {
-        setRecovery(error.message)
-        toast({
-          title: 'Verify Failed',
-        })
-      }
+      setRecovery((error as Error)?.message)
+      toast({
+        title: 'Verify Failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 

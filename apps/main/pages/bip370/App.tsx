@@ -39,12 +39,10 @@ function App() {
       const utxos = await provider?.getUtxos(address ?? '')
       setUnspent(JSON.stringify(utxos, null, 2))
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'connect failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'connect failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
@@ -81,12 +79,10 @@ function App() {
         title: 'Generate Success',
       })
     } catch (err) {
-      if (err instanceof Error) {
-        toast({
-          title: 'Generate Failed',
-          description: err.message,
-        })
-      }
+      toast({
+        title: 'Generate Failed',
+        description: JSON.stringify(err),
+      })
     }
   }
 
@@ -99,12 +95,10 @@ function App() {
         title: 'Sign Success',
       })
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'Sign Failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'Sign Failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
@@ -117,12 +111,10 @@ function App() {
         title: 'Sign Success',
       })
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'Sign Failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'Sign Failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
@@ -142,12 +134,10 @@ function App() {
       const res = await decodeByNode(psbt)
       setDecodeResFromNode(JSON.stringify(res, null, 2))
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'Decode Failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'Decode Failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
@@ -159,12 +149,10 @@ function App() {
         title: 'Send Success',
       })
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: 'Send Failed',
-          description: error.message,
-        })
-      }
+      toast({
+        title: 'Send Failed',
+        description: JSON.stringify(error),
+      })
     }
   }
 
