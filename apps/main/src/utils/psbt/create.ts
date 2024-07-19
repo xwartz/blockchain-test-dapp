@@ -28,7 +28,7 @@ export const createPSBT = ({
   changeAddress,
   network,
   feeRate,
-}: CreatePsbtParams) => {
+}: CreatePsbtParams): string => {
   const psbt = new bitcoin.Psbt({ network })
 
   // 添加输入
