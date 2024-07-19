@@ -49,7 +49,12 @@ export function verifyMessageOfBIP322Simple(
       networkType,
     )
   }
-  return false
+  return verifySignatureOfBIP322Simple_P2PKH(
+    address,
+    msg,
+    signature,
+    networkType,
+  )
 }
 
 function verifySignatureOfBIP322Simple_P2WPKH(
@@ -213,6 +218,41 @@ function verifySignatureOfBIP322Simple_P2TR(
     0,
   )
   return schnorrValidator(pubkey, tapKeyHash, signature)
+}
+
+function verifySignatureOfBIP322Simple_P2PKH(
+  address: string,
+  msg: string,
+  sign: string,
+  networkType: Network = Network.MAINNET,
+) {
+  const network = toPsbtNetwork(networkType)
+  const outputScript = bitcoin.address.toOutputScript(address, network)
+
+  const txToSpend = createTxToSpend(msg, outputScript)
+
+  const data = Buffer.from(sign, 'base64')
+  const res = bitcoin.script.decompile(data.slice(1))
+
+  const psbtToSign = new bitcoin.Psbt()
+  psbtToSign.setVersion(0)
+  psbtToSign.addInput({
+    hash: txToSpend.getHash(),
+    index: 0,
+    sequence: 0,
+    nonWitnessUtxo: txToSpend.toBuffer(),
+  })
+  psbtToSign.addOutput({ script: Buffer.from('6a', 'hex'), value: 0 })
+
+  psbtToSign.updateInput(0, {
+    partialSig: [
+      {
+        pubkey: res?.[1] as Buffer,
+        signature: res?.[0] as Buffer,
+      },
+    ],
+  })
+  return psbtToSign.validateSignaturesOfAllInputs(validator)
 }
 
 export function genPsbtOfBIP322Simple({
