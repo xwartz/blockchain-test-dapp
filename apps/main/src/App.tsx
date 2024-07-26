@@ -24,6 +24,9 @@ function App() {
             <li>
               <a href="./pages/bip370/">BIP-370</a>
             </li>
+            <li>
+              <a href="./pages/cosmos/">cosmos</a>
+            </li>
           </ul>
         </div>
       </div>

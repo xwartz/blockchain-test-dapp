@@ -4,8 +4,6 @@ import { Network } from '../providers/base'
 import { toPsbtNetwork } from '../network/transport'
 import { decodePsbt } from '../mempool/api'
 
-bitcoin.initEccLib(ecc)
-
 const getScriptPubKey = (script: Buffer, network: Network) => {
   const nw = toPsbtNetwork(network)
   const chunks = bitcoin.script.decompile(script)
@@ -66,9 +64,13 @@ type Result = {
   version: number
 }
 export const decodeFromHex = (psbtHex: string, network: Network): Result => {
+  bitcoin.initEccLib(ecc)
+
   const psbt = bitcoin.Psbt.fromHex(psbtHex, {
     network: toPsbtNetwork(network),
   })
+
+  console.log('psbt', psbt)
 
   const unSignedTx = bitcoin.Transaction.fromBuffer(psbt.data.getTransaction())
   const txid = unSignedTx.getId()

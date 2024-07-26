@@ -1,6 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib'
 import * as ecc from '@bitcoin-js/tiny-secp256k1-asmjs'
-bitcoin.initEccLib(ecc)
 
 export interface UTXO {
   // hash of transaction that holds the UTXO
@@ -29,6 +28,7 @@ export const createPSBT = ({
   network,
   feeRate,
 }: CreatePsbtParams): string => {
+  bitcoin.initEccLib(ecc)
   const psbt = new bitcoin.Psbt({ network })
 
   // 添加输入
