@@ -1,7 +1,6 @@
 import { pubkeyType, StdFee } from '@cosmjs/amino'
 import { fromHex, toBase64, toHex } from '@cosmjs/encoding'
 import {
-  coins,
   encodePubkey,
   makeAuthInfoBytes,
   makeSignBytes,
@@ -12,38 +11,37 @@ import { defaultRegistryTypes } from '@cosmjs/stargate'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { SignMode } from 'cosmjs-types/cosmos/tx/signing/v1beta1/signing'
 import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
 
-type Msg = {
+export type Msg = {
   typeUrl: string
-  value: MsgSend // todo: other tx types
+  value: Partial<MsgSend> | Partial<MsgTransfer> // todo: other tx types
 }
 
-export const genMsgSend = (
-  sender: string,
-  recipient: string,
-  amount: string,
-  denom: string,
-) => {
+export const genMsgSend = (value: Partial<MsgSend>) => {
   return {
     typeUrl: MsgSend.typeUrl,
-    value: {
-      fromAddress: sender,
-      toAddress: recipient,
-      amount: coins(amount, denom),
-    },
+    value,
   }
 }
 
-type SignMessage = {
+export const genMsgTransfer = (value: Partial<MsgTransfer>) => {
+  return {
+    typeUrl: MsgTransfer.typeUrl,
+    value,
+  }
+}
+
+type SignMessage<T extends Msg> = {
   pubKey: string
-  msgs: Msg[]
+  msgs: T[]
   memo: string
   sequence: number
   fee: StdFee
   chainId: string
   accountNumber: number
 }
-export const makeSignMessage = ({
+export const makeSignMessage = <T extends Msg>({
   pubKey,
   msgs,
   memo,
@@ -51,7 +49,7 @@ export const makeSignMessage = ({
   fee,
   chainId,
   accountNumber,
-}: SignMessage) => {
+}: SignMessage<T>) => {
   const txBodyFields = {
     typeUrl: TxBody.typeUrl,
     value: {

@@ -18,6 +18,7 @@
     "@cosmjs/stargate": "^0.32.4",
     "@cosmjs/tendermint-rpc": "^0.32.4",
     "@repo/ui": "workspace:*",
+    "axios": "^1.7.2",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.6",
     "chain-registry": "^1.63.40",

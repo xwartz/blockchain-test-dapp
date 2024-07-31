@@ -1,13 +1,34 @@
 import { Account, defaultRegistryTypes, StargateClient } from '@cosmjs/stargate'
-import { Any } from 'cosmjs-types/google/protobuf/any'
-import { Pubkey, pubkeyType } from '@cosmjs/amino'
+import { pubkeyType } from '@cosmjs/amino'
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
 import { SimulateResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service'
 import { chains } from 'chain-registry'
 import { StatusResponse } from '@cosmjs/tendermint-rpc'
 import { EncodeObject, Registry } from '@cosmjs/proto-signing'
-import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { fromHex, toBase64 } from '@cosmjs/encoding'
+import axios from 'axios'
+
+const IBC_URL = 'https://assets.leapwallet.io/ibc-support-db/pairs'
+
+interface IBCData {
+  $schema: string
+  chain_1: Blockchain
+  chain_2: Blockchain
+  channels: Channel[]
+}
+
+interface Channel {
+  chain_1: Blockchain
+  chain_2: Blockchain
+  ordering: string
+  version: string
+}
+
+interface Blockchain {
+  channel_id: string
+  port_id: string
+  connection_id?: string
+}
 
 type Chains = typeof chains
 
@@ -93,4 +114,34 @@ export class ApiClient {
   disconnect() {
     this.client.disconnect()
   }
+  async getIbcData(
+    sourceChain: string,
+    recipientChain: string,
+  ): Promise<{ chain1: string; chain2: string; ibcData: IBCData }> {
+    const chainOrder = [sourceChain, recipientChain]
+      .sort()
+      .sort((a, b) => a.localeCompare(b))
+    const filePath = chainOrder.join('-')
+    const response = await axios(`${IBC_URL}/${filePath}.json`)
+    const ibcData: IBCData = await response.data
+    const [chain1, chain2] = chainOrder
+    return { chain1, chain2, ibcData }
+  }
+
+  async getSourceChannelId(sourceChainId: string, recipientChainId: string) {
+    const sourceChain = chainIdToChainName(sourceChainId)
+    const recipientChain = chainIdToChainName(recipientChainId)
+    const { chain1, ibcData } = await this.getIbcData(
+      sourceChain,
+      recipientChain,
+    )
+    const [channel] = ibcData.channels
+    return chain1 === sourceChain
+      ? channel['chain_1'].channel_id
+      : channel['chain_2'].channel_id
+  }
+}
+
+function chainIdToChainName(chainId: string) {
+  return chainId.split('-')[0]
 }

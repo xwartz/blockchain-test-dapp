@@ -1,13 +1,17 @@
 import { useReducer } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
-import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
+import { DirectSecp256k1HdWallet, coins } from '@cosmjs/proto-signing'
 import { chains } from 'chain-registry'
 import { stringToPath } from '@cosmjs/crypto'
 import { Separator, useToast } from '@ui/components'
 import { pubkeyToAddress } from '@cosmjs/amino'
 import { toBase64 } from '@cosmjs/encoding'
 import { getHDPath } from '@/utils/cosmos/path'
-import { genMsgSend, makeSignMessage } from '@/utils/cosmos/sign'
+import {
+  genMsgSend,
+  genMsgTransfer,
+  makeSignMessage,
+} from '@/utils/cosmos/sign'
 import { ApiClient } from '@/utils/cosmos/api'
 import { calculateFee } from '@cosmjs/stargate'
 import { initialState, reducer } from './state'
@@ -15,6 +19,7 @@ import { Header } from './components/Header'
 import { WalletInfo } from './components/WalletInfo'
 import { Mnemonic } from './components/Mnemonic'
 import { SignTx } from './components/SignTx'
+import { getChainFromAddress, isIBCTransfer } from '@/utils/cosmos/ibc'
 
 const initApi = () => {
   let client: ApiClient | null = null
@@ -28,6 +33,9 @@ const initApi = () => {
         client = await ApiClient.getClient(endpoint)
       }
       return client
+    },
+    clearClient: () => {
+      client = null
     },
   }
 }
@@ -114,25 +122,56 @@ export default function App() {
       const chain = chains.find((c) => c.chain_name === state.selectedChain)
       if (!chain) return
 
-      const msg = genMsgSend(
-        state.address,
-        state.recipient,
-        state.amount,
-        state.denom,
-      )
-
       const client = await api.getClient(chain)
+
+      const isIBCTx = isIBCTransfer(state.address, state.recipient)
+
+      const genMsg = async () => {
+        if (isIBCTx) {
+          const recipientChain = getChainFromAddress(state.recipient)
+          if (!recipientChain) {
+            throw new Error("Recipient address doesn't belong to any chain")
+          }
+          const recipientChainId = recipientChain.chain_id
+          const sourceChainId = chain.chain_id
+          const sourceChannelId = await client.getSourceChannelId(
+            sourceChainId,
+            recipientChainId,
+          )
+          return genMsgTransfer({
+            sourcePort: 'transfer',
+            sourceChannel: sourceChannelId,
+            sender: state.address,
+            receiver: state.recipient,
+            token: {
+              denom: state.denom,
+              amount: state.amount,
+            },
+            memo: state.memo,
+            timeoutTimestamp: BigInt(
+              (Math.floor(Date.now() / 1000) + 120) * 1_000_000_000,
+            ),
+          })
+        }
+        return genMsgSend({
+          fromAddress: state.address,
+          toAddress: state.recipient,
+          amount: coins(state.amount, state.denom),
+        })
+      }
+
+      const msg = await genMsg()
+      console.log('msg', msg)
       const { gasPrice, denom } = client.getGasPrice(chain.fees, state.denom)
-      const gas = await client.estimateGas(
+      const { gasInfo } = await client.estimateGas(
         msg,
         state.memo,
         state.publicKey,
         state.sequence,
       )
-      const fee = calculateFee(
-        Number(gas.gasInfo?.gasWanted ?? 0),
-        `${gasPrice}${denom}`,
-      )
+      const gasLimit = Number(gasInfo?.gasUsed ?? 0) * 1.5
+      const fee = calculateFee(gasLimit, `${gasPrice}${denom}`)
+      console.log('fee', fee)
       const unSignedTx = makeSignMessage({
         chainId: chain.chain_id,
         accountNumber: 0,
@@ -164,9 +203,10 @@ export default function App() {
         onMnemonicChange={(e) =>
           dispatch({ type: 'SET_MNEMONIC', payload: e.target.value })
         }
-        onSelectChange={(value) =>
+        onSelectChange={(value) => {
+          api.clearClient()
           dispatch({ type: 'SET_SELECTED_CHAIN', payload: value })
-        }
+        }}
       />
       <WalletInfo
         selectedChain={state.selectedChain}
@@ -180,9 +220,14 @@ export default function App() {
       <SignTx
         selectedChain={state.selectedChain}
         unSignedTx={state.unSignedTx}
-        onRecipientChange={(e) =>
+        onRecipientChange={(e) => {
+          if (isIBCTransfer(state.address, e.target.value)) {
+            toast({
+              title: 'IBC transfer',
+            })
+          }
           dispatch({ type: 'SET_RECIPIENT', payload: e.target.value })
-        }
+        }}
         onAmountChange={(e) =>
           dispatch({ type: 'SET_AMOUNT', payload: e.target.value })
         }
