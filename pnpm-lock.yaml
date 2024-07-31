@@ -41,6 +41,9 @@ importers:
       '@cosmjs/stargate':
         specifier: ^0.32.4
         version: 0.32.4
+      '@cosmjs/tendermint-rpc':
+        specifier: ^0.32.4
+        version: 0.32.4
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui

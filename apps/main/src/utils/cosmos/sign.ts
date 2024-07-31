@@ -1,4 +1,4 @@
-import { pubkeyType } from '@cosmjs/amino'
+import { pubkeyType, StdFee } from '@cosmjs/amino'
 import { fromHex, toBase64, toHex } from '@cosmjs/encoding'
 import {
   coins,
@@ -34,18 +34,12 @@ export const genMsgSend = (
   }
 }
 
-type CosmosAmount = { denom: string; amount: string }
-type CosmosFee = {
-  amount: CosmosAmount[]
-  gas: string
-}
-
 type SignMessage = {
   pubKey: string
   msgs: Msg[]
   memo: string
   sequence: number
-  fee: CosmosFee
+  fee: StdFee
   chainId: string
   accountNumber: number
 }
