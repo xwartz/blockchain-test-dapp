@@ -1,12 +1,13 @@
-import { Account, defaultRegistryTypes, StargateClient } from '@cosmjs/stargate'
+import { Account, StargateClient } from '@cosmjs/stargate'
 import { pubkeyType } from '@cosmjs/amino'
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
 import { SimulateResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service'
 import { chains } from 'chain-registry'
 import { StatusResponse } from '@cosmjs/tendermint-rpc'
-import { EncodeObject, Registry } from '@cosmjs/proto-signing'
+import { EncodeObject } from '@cosmjs/proto-signing'
 import { fromHex, toBase64 } from '@cosmjs/encoding'
 import axios from 'axios'
+import { getRegistry } from './registry'
 
 const IBC_URL = 'https://assets.leapwallet.io/ibc-support-db/pairs'
 
@@ -86,7 +87,7 @@ export class ApiClient {
     pubKey: string,
     sequence: number,
   ): Promise<SimulateResponse> {
-    const registry = new Registry(defaultRegistryTypes)
+    const registry = getRegistry()
     const msgAny = registry.encodeAsAny(msg)
     const messages = [msgAny]
     const signer = {
@@ -99,8 +100,8 @@ export class ApiClient {
       .forceGetQueryClient()
       .tx.simulate(messages, memo, signer, sequence)
   }
-  getGasPrice(fees: Chains[number]['fees'], denom: string) {
-    const feeToken = fees?.fee_tokens.find((f) => f.denom === denom)
+  getGasPrice(fees: Chains[number]['fees']) {
+    const feeToken = fees?.fee_tokens[0]
     if (!feeToken) {
       throw new Error('Fee token not found')
     }
@@ -108,7 +109,7 @@ export class ApiClient {
       gasPrice: feeToken.average_gas_price ?? 1,
       highGasPrice: feeToken.high_gas_price ?? 1,
       lowGasPrice: feeToken.low_gas_price ?? 1,
-      denom,
+      denom: feeToken.denom,
     }
   }
   disconnect() {

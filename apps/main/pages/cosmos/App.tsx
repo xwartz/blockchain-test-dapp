@@ -8,6 +8,7 @@ import { pubkeyToAddress } from '@cosmjs/amino'
 import { toBase64 } from '@cosmjs/encoding'
 import { getHDPath } from '@/utils/cosmos/path'
 import {
+  genMsgExecuteContractTransfer,
   genMsgSend,
   genMsgTransfer,
   makeSignMessage,
@@ -126,8 +127,13 @@ export default function App() {
 
       const isIBCTx = isIBCTransfer(state.address, state.recipient)
 
+      const isCW20 = state.denom.startsWith('cw20')
+
       const genMsg = async () => {
         if (isIBCTx) {
+          toast({
+            title: 'IBC transfer',
+          })
           const recipientChain = getChainFromAddress(state.recipient)
           if (!recipientChain) {
             throw new Error("Recipient address doesn't belong to any chain")
@@ -153,6 +159,17 @@ export default function App() {
             ),
           })
         }
+        if (isCW20) {
+          toast({
+            title: 'cw20 transfer',
+          })
+          return genMsgExecuteContractTransfer({
+            sender: state.address,
+            contract: state.denom.replace('cw20:', ''),
+            recipient: state.recipient,
+            amount: state.amount,
+          })
+        }
         return genMsgSend({
           fromAddress: state.address,
           toAddress: state.recipient,
@@ -162,7 +179,7 @@ export default function App() {
 
       const msg = await genMsg()
       console.log('msg', msg)
-      const { gasPrice, denom } = client.getGasPrice(chain.fees, state.denom)
+      const { gasPrice, denom } = client.getGasPrice(chain.fees)
       const { gasInfo } = await client.estimateGas(
         msg,
         state.memo,
@@ -221,11 +238,6 @@ export default function App() {
         selectedChain={state.selectedChain}
         unSignedTx={state.unSignedTx}
         onRecipientChange={(e) => {
-          if (isIBCTransfer(state.address, e.target.value)) {
-            toast({
-              title: 'IBC transfer',
-            })
-          }
           dispatch({ type: 'SET_RECIPIENT', payload: e.target.value })
         }}
         onAmountChange={(e) =>
