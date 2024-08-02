@@ -1,7 +1,7 @@
 import { State } from '../state'
 
 export function WalletInfo({
-  selectedChain,
+  selectedChainName,
   publicKey,
   address,
   accountNumber,
@@ -14,7 +14,7 @@ export function WalletInfo({
       <div className="mt-2">
         <p>Chain: </p>
         <code className="rounded bg-muted text-sm break-all">
-          {selectedChain}
+          {selectedChainName}
         </code>
       </div>
       <div className="mt-2">

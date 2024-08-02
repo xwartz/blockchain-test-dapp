@@ -1,11 +1,14 @@
-import { useReducer } from 'react'
-import { ThemeProvider } from '@/components/theme-provider'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { DirectSecp256k1HdWallet, coins } from '@cosmjs/proto-signing'
 import { chains } from 'chain-registry'
 import { stringToPath } from '@cosmjs/crypto'
-import { Separator, useToast } from '@ui/components'
+import { Button, Separator, useToast } from '@ui/components'
 import { pubkeyToAddress } from '@cosmjs/amino'
 import { toBase64 } from '@cosmjs/encoding'
+import { calculateFee } from '@cosmjs/stargate'
+import { useChain } from '@cosmos-kit/react'
+import { Cable, Unplug } from 'lucide-react'
+
 import { getHDPath } from '@/utils/cosmos/path'
 import {
   genMsgExecuteContractTransfer,
@@ -14,7 +17,6 @@ import {
   makeSignMessage,
 } from '@/utils/cosmos/sign'
 import { ApiClient } from '@/utils/cosmos/api'
-import { calculateFee } from '@cosmjs/stargate'
 import { initialState, reducer } from './state'
 import { Header } from './components/Header'
 import { WalletInfo } from './components/WalletInfo'
@@ -47,6 +49,69 @@ export default function App() {
   const { toast } = useToast()
   const [state, dispatch] = useReducer(reducer, initialState)
 
+  const chainContext = useChain(state.selectedChainName || 'cosmoshub')
+
+  const chain = useMemo(() => {
+    return chains.find((c) => c.chain_name === state.selectedChainName)
+  }, [state.selectedChainName])
+
+  const updateBalances = useCallback(
+    async (address: string) => {
+      if (!address) return
+
+      if (!chain) return
+
+      const client = await api.getClient(chain)
+      const status = await client.status()
+      console.log('status', status)
+      dispatch({
+        type: 'SET_NODE_INFO',
+        payload: {
+          channels: status.nodeInfo.channels,
+          network: status.nodeInfo.network,
+          version: status.nodeInfo.version,
+        },
+      })
+      const account = await client.getAccountInfo(address)
+      console.log('account', account)
+      dispatch({
+        type: 'SET_ACCOUNT_NUMBER',
+        payload: account.accountNumber,
+      })
+      dispatch({ type: 'SET_SEQUENCE', payload: account.sequence })
+      const balances = await client.getAccountBalance(address)
+      console.log('balances', balances)
+      dispatch({
+        type: 'SET_BALANCES',
+        payload: balances,
+      })
+    },
+    [chain],
+  )
+
+  useEffect(() => {
+    const updateWalletInfo = async () => {
+      const account = await chainContext.getAccount()
+      const publicKey = Buffer.from(account.pubkey).toString('hex')
+      dispatch({
+        type: 'SET_PUBLIC_KEY',
+        payload: publicKey,
+      })
+      dispatch({
+        type: 'CONNECT',
+        payload: {
+          selectedChainName: chainContext.chain.chain_name,
+          address: account.address,
+        },
+      })
+    }
+
+    if (chainContext.status === 'Connected') {
+      updateWalletInfo()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainContext.status, updateBalances])
+
   const generateMnemonic = async () => {
     const wallet = await DirectSecp256k1HdWallet.generate(12)
     dispatch({ type: 'SET_MNEMONIC', payload: wallet.mnemonic })
@@ -54,9 +119,8 @@ export default function App() {
 
   const generateAddress = async () => {
     try {
-      if (!state.mnemonic || !state.selectedChain) return
+      if (!state.mnemonic || !state.selectedChainName) return
 
-      const chain = chains.find((c) => c.chain_name === state.selectedChain)
       if (!chain) return
 
       console.log('chain', chain)
@@ -84,31 +148,7 @@ export default function App() {
         chain.bech32_prefix,
       )
       console.log('pubkeyAddress', pubkeyAddress)
-
-      const client = await api.getClient(chain)
-      const status = await client.status()
-      console.log('status', status)
-      dispatch({
-        type: 'SET_NODE_INFO',
-        payload: {
-          channels: status.nodeInfo.channels,
-          network: status.nodeInfo.network,
-          version: status.nodeInfo.version,
-        },
-      })
-      const account = await client.getAccountInfo(address)
-      console.log('account', account)
-      dispatch({
-        type: 'SET_ACCOUNT_NUMBER',
-        payload: account.accountNumber,
-      })
-      dispatch({ type: 'SET_SEQUENCE', payload: account.sequence })
-      const balances = await client.getAccountBalance(address)
-      console.log('balances', balances)
-      dispatch({
-        type: 'SET_BALANCES',
-        payload: balances,
-      })
+      await updateBalances(address)
     } catch (error) {
       toast({
         title: 'generateAddress error',
@@ -118,9 +158,19 @@ export default function App() {
     }
   }
 
+  const onConnect = async () => {
+    await chainContext.connect()
+  }
+
+  const onDisconnect = async () => {
+    if (chainContext.status === 'Connected') {
+      await chainContext.disconnect()
+    }
+    dispatch({ type: 'DISCONNECT' })
+  }
+
   const onSignTx = async () => {
     try {
-      const chain = chains.find((c) => c.chain_name === state.selectedChain)
       if (!chain) return
 
       const client = await api.getClient(chain)
@@ -209,12 +259,12 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <div className="mt-4 grid w-full gap-2 grid w-full max-w-5xl mx-auto">
       <Header />
       <Separator />
       <Mnemonic
         mnemonic={state.mnemonic}
-        selectedChain={state.selectedChain}
+        selectedChainName={state.selectedChainName}
         generateMnemonic={generateMnemonic}
         generateAddress={generateAddress}
         onMnemonicChange={(e) =>
@@ -225,8 +275,17 @@ export default function App() {
           dispatch({ type: 'SET_SELECTED_CHAIN', payload: value })
         }}
       />
+      <Separator />
+      <div className="p-5 text-center">
+        <ConnectButton
+          connected={state.connected}
+          onConnect={onConnect}
+          onDisconnect={onDisconnect}
+        />
+      </div>
+      <Separator />
       <WalletInfo
-        selectedChain={state.selectedChain}
+        selectedChainName={state.selectedChainName}
         address={state.address}
         publicKey={state.publicKey}
         accountNumber={state.accountNumber}
@@ -235,7 +294,7 @@ export default function App() {
       />
       <Separator />
       <SignTx
-        selectedChain={state.selectedChain}
+        selectedChainName={state.selectedChainName}
         unSignedTx={state.unSignedTx}
         onRecipientChange={(e) => {
           dispatch({ type: 'SET_RECIPIENT', payload: e.target.value })
@@ -252,7 +311,29 @@ export default function App() {
         onSignTx={onSignTx}
       />
       <Separator />
-    </ThemeProvider>
+    </div>
   )
 }
 
+function ConnectButton({
+  connected,
+  onConnect,
+  onDisconnect,
+}: {
+  connected: boolean
+  onConnect: () => void
+  onDisconnect: () => void
+}) {
+  if (!connected) {
+    return (
+      <Button onClick={onConnect}>
+        <Cable className="mr-2 h-4 w-4" /> Connect Wallet
+      </Button>
+    )
+  }
+  return (
+    <Button variant="destructive" onClick={onDisconnect}>
+      <Unplug className="mr-2 h-4 w-4" /> Disconnect Wallet
+    </Button>
+  )
+}

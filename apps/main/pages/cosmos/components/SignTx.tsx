@@ -2,7 +2,7 @@ import { Label, Button, Input } from '@ui/components'
 import { chains } from 'chain-registry'
 
 export function SignTx({
-  selectedChain,
+  selectedChainName,
   unSignedTx,
   onRecipientChange,
   onAmountChange,
@@ -10,7 +10,7 @@ export function SignTx({
   onDenomChange,
   onSignTx,
 }: {
-  selectedChain: string
+  selectedChainName: string
   unSignedTx: string
   onRecipientChange: React.ChangeEventHandler<HTMLInputElement>
   onAmountChange: React.ChangeEventHandler<HTMLInputElement>
@@ -18,11 +18,11 @@ export function SignTx({
   onDenomChange: React.ChangeEventHandler<HTMLInputElement>
   onSignTx: () => void
 }) {
-  const chain = chains.find((c) => c.chain_name === selectedChain)
+  const chain = chains.find((c) => c.chain_name === selectedChainName)
   if (!chain) return null
 
   return (
-    <div className="p-5 mx-auto text-center" style={{ maxWidth: '100%' }}>
+    <div className="p-5 text-center">
       <h3 className="text-xl font-semibold">Sign Tx</h3>
       <div className="gap-1.5">
         <Label htmlFor="recipient">Recipient</Label>

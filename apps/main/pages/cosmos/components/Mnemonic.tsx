@@ -15,7 +15,7 @@ import { chains } from 'chain-registry'
 export function Mnemonic({
   generateMnemonic,
   mnemonic,
-  selectedChain,
+  selectedChainName,
   generateAddress,
   onMnemonicChange,
   onSelectChange,
@@ -25,10 +25,10 @@ export function Mnemonic({
   onMnemonicChange: React.ChangeEventHandler<HTMLTextAreaElement>
   onSelectChange: (value: string) => void
   mnemonic: string
-  selectedChain: string
+  selectedChainName: string
 }) {
   return (
-    <div className="p-5 text-center" style={{ maxWidth: '100%' }}>
+    <div className="p-5 text-center">
       <Button variant="destructive" onClick={generateMnemonic}>
         Generate Mnemonic
       </Button>
@@ -42,7 +42,7 @@ export function Mnemonic({
         />
       </div>
       <div className="mt-2 grid justify-items-center">
-        <Select onValueChange={onSelectChange} value={selectedChain}>
+        <Select onValueChange={onSelectChange} value={selectedChainName}>
           <SelectTrigger className="w-[280px]">
             <SelectValue placeholder="Select a Chain" />
           </SelectTrigger>

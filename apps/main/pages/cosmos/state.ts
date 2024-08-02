@@ -14,7 +14,7 @@ export type State = {
   balances: Coin[]
   signature: string
   mnemonic: string
-  selectedChain: string
+  selectedChainName: string
   recipient: string
   amount: string
   denom: string
@@ -54,7 +54,7 @@ export const initialState: State = {
   publicKey: '',
   signature: '',
   mnemonic: '',
-  selectedChain: '',
+  selectedChainName: '',
   recipient: '',
   amount: '0',
   denom: '',
@@ -71,7 +71,7 @@ export function reducer(state: State, action: Action): State {
     case 'SET_MNEMONIC':
       return { ...state, mnemonic: action.payload }
     case 'SET_SELECTED_CHAIN':
-      return { ...state, selectedChain: action.payload }
+      return { ...state, selectedChainName: action.payload }
     case 'SET_PUBLIC_KEY':
       return { ...state, publicKey: action.payload }
     case 'SET_ADDRESS':
