@@ -4,6 +4,7 @@ import { chains } from 'chain-registry'
 export function SignTx({
   selectedChainName,
   unSignedTx,
+  signature,
   onRecipientChange,
   onAmountChange,
   onMemoChange,
@@ -12,6 +13,7 @@ export function SignTx({
 }: {
   selectedChainName: string
   unSignedTx: string
+  signature: string
   onRecipientChange: React.ChangeEventHandler<HTMLInputElement>
   onAmountChange: React.ChangeEventHandler<HTMLInputElement>
   onMemoChange: React.ChangeEventHandler<HTMLInputElement>
@@ -56,6 +58,10 @@ export function SignTx({
       <div className="mt-2">
         <p>unSigned Tx: </p>
         <code className="rounded bg-muted text-sm break-all">{unSignedTx}</code>
+      </div>
+      <div className="mt-2">
+        <p>Signature: </p>
+        <code className="rounded bg-muted text-sm break-all">{signature}</code>
       </div>
     </div>
   )

@@ -4,10 +4,11 @@ import { chains } from 'chain-registry'
 import { stringToPath } from '@cosmjs/crypto'
 import { Button, Separator, useToast } from '@ui/components'
 import { pubkeyToAddress } from '@cosmjs/amino'
-import { toBase64 } from '@cosmjs/encoding'
+import { toBase64, toHex } from '@cosmjs/encoding'
 import { calculateFee } from '@cosmjs/stargate'
 import { useChain } from '@cosmos-kit/react'
 import { Cable, Unplug } from 'lucide-react'
+import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
 
 import { getHDPath } from '@/utils/cosmos/path'
 import {
@@ -93,6 +94,23 @@ export default function App() {
     const updateWalletInfo = async () => {
       const account = await chainContext.getAccount()
       const publicKey = Buffer.from(account.pubkey).toString('hex')
+      const stargateClient = await chainContext.getSigningStargateClient()
+      const balances = await stargateClient.getAllBalances(account.address)
+      console.log('balances', balances)
+      const accountInfo = await stargateClient.getAccount(account.address)
+
+      if (accountInfo) {
+        dispatch({
+          type: 'SET_ACCOUNT_NUMBER',
+          payload: accountInfo.accountNumber,
+        })
+        dispatch({ type: 'SET_SEQUENCE', payload: accountInfo.sequence })
+      }
+
+      dispatch({
+        type: 'SET_BALANCES',
+        payload: balances as Coin[],
+      })
       dispatch({
         type: 'SET_PUBLIC_KEY',
         payload: publicKey,
@@ -107,10 +125,16 @@ export default function App() {
     }
 
     if (chainContext.status === 'Connected') {
-      updateWalletInfo()
+      updateWalletInfo().catch((err) => {
+        toast({
+          title: 'Error connecting to node',
+          description: err.message,
+          variant: 'destructive',
+        })
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainContext.status, updateBalances])
+  }, [chainContext.status])
 
   const generateMnemonic = async () => {
     const wallet = await DirectSecp256k1HdWallet.generate(12)
@@ -236,7 +260,7 @@ export default function App() {
         state.publicKey,
         state.sequence,
       )
-      const gasLimit = Number(gasInfo?.gasUsed ?? 0) * 1.5
+      const gasLimit = Math.round(Number(gasInfo?.gasUsed ?? 0) * 1.5)
       const fee = calculateFee(gasLimit, `${gasPrice}${denom}`)
       console.log('fee', fee)
       const unSignedTx = makeSignMessage({
@@ -249,6 +273,24 @@ export default function App() {
         pubKey: state.publicKey,
       })
       dispatch({ type: 'SET_UNSIGNED_TX', payload: unSignedTx })
+
+      // call extension wallet to sign
+      if (chainContext?.status !== 'Connected') return
+      const cosmosClientType = isCW20 ? 'cosmwasm' : 'stargate'
+      const signedTx = await chainContext.sign(
+        [msg],
+        fee,
+        state.memo,
+        cosmosClientType,
+      )
+      console.log('extension wallet signedTx', signedTx)
+      const signBytes = toHex(signedTx.bodyBytes)
+      const authInfoBytes = toHex(signedTx.authInfoBytes)
+      const signature = toHex(signedTx.signatures[0])
+      console.log('extension wallet signBytes', signBytes)
+      console.log('extension wallet authInfoBytes', authInfoBytes)
+      console.log('extension wallet signature', signature)
+      dispatch({ type: 'SET_SIGNATURE', payload: signature })
     } catch (error) {
       toast({
         title: 'onSignTx error',
@@ -296,6 +338,7 @@ export default function App() {
       <SignTx
         selectedChainName={state.selectedChainName}
         unSignedTx={state.unSignedTx}
+        signature={state.signature}
         onRecipientChange={(e) => {
           dispatch({ type: 'SET_RECIPIENT', payload: e.target.value })
         }}

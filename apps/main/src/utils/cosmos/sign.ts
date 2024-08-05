@@ -128,6 +128,9 @@ export const makeSignMessage = <T extends Msg>({
     SignMode.SIGN_MODE_DIRECT,
   )
 
+  console.log('bodyBytes', toHex(bodyBytes))
+  console.log('authInfoBytes', toHex(authInfoBytes))
+
   const signDoc = makeSignDoc(bodyBytes, authInfoBytes, chainId, accountNumber)
   const signBytes = makeSignBytes(signDoc)
   return toHex(signBytes)
