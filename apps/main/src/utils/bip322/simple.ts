@@ -4,20 +4,21 @@ import * as ecc from '@bitcoin-js/tiny-secp256k1-asmjs'
 import { Network } from '../providers/base'
 import { toPsbtNetwork } from '../network/transport'
 
-bitcoin.initEccLib(ecc)
-const ECPair = ECPairFactory(ecc)
-
 const validator = (
   pubkey: Buffer,
   msghash: Buffer,
   signature: Buffer,
-): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature)
+): boolean => {
+  const ECPair = ECPairFactory(ecc)
+  return ECPair.fromPublicKey(pubkey).verify(msghash, signature)
+}
 
 const schnorrValidator = (
   pubkey: Buffer,
   msghash: Buffer,
   signature: Buffer,
 ): boolean => {
+  const ECPair = ECPairFactory(ecc)
   return ECPair.fromPublicKey(pubkey).verifySchnorr(msghash, signature)
 }
 
@@ -27,6 +28,8 @@ export function verifyMessageOfBIP322Simple(
   signature: string,
   networkType: Network,
 ) {
+  bitcoin.initEccLib(ecc)
+
   if (/^(bc1p|tb1p)/.test(address)) {
     return verifySignatureOfBIP322Simple_P2TR(
       address,

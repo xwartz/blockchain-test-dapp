@@ -33,6 +33,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         bip322: path.resolve(__dirname, 'pages/bip322/index.html'),
         bip370: path.resolve(__dirname, 'pages/bip370/index.html'),
+        cosmos: path.resolve(__dirname, 'pages/cosmos/index.html'),
       },
     },
   },
