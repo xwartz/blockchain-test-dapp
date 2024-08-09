@@ -302,6 +302,7 @@ export function genPsbtOfBIP322Simple({
 }
 
 function addressToScriptPk(address: string, networkType: Network) {
+  bitcoin.initEccLib(ecc)
   const network = toPsbtNetwork(networkType)
   return bitcoin.address.toOutputScript(address, network)
 }
