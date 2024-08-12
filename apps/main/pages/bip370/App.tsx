@@ -147,7 +147,7 @@ function App() {
       const result = createPSBT({
         toAddress: state.address,
         utxos: JSON.parse(state.unspent),
-        amount: 1000,
+        amount: 5000,
         changeAddress: state.address,
         network: toPsbtNetwork(state.network as Network),
         feeRate: feeRate ?? 6,
