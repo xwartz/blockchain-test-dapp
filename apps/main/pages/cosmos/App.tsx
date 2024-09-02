@@ -15,6 +15,7 @@ import {
   genMsgExecuteContractTransfer,
   genMsgSend,
   genMsgTransfer,
+  makeSignDirect,
   makeSignMessage,
 } from '@/utils/cosmos/sign'
 import { ApiClient } from '@/utils/cosmos/api'
@@ -277,16 +278,23 @@ export default function App() {
       // call extension wallet to sign
       if (chainContext?.status !== 'Connected') return
       const cosmosClientType = isCW20 ? 'cosmwasm' : 'stargate'
-      const signedTx = await chainContext.sign(
-        [msg],
-        fee,
-        state.memo,
-        cosmosClientType,
+      console.log('cosmosClientType', cosmosClientType)
+      const signedTx = await chainContext.signDirect(
+        state.address,
+        makeSignDirect({
+          pubKey: state.publicKey,
+          msgs: [msg],
+          memo: state.memo,
+          sequence: state.sequence,
+          fee,
+          chainId: chain.chain_id,
+          accountNumber: state.accountNumber,
+        }),
       )
       console.log('extension wallet signedTx', signedTx)
-      const signBytes = toHex(signedTx.bodyBytes)
-      const authInfoBytes = toHex(signedTx.authInfoBytes)
-      const signature = toHex(signedTx.signatures[0])
+      const signBytes = toHex(signedTx.signed.bodyBytes)
+      const authInfoBytes = toHex(signedTx.signed.authInfoBytes)
+      const signature = signedTx.signature.signature
       console.log('extension wallet signBytes', signBytes)
       console.log('extension wallet authInfoBytes', authInfoBytes)
       console.log('extension wallet signature', signature)
@@ -294,7 +302,7 @@ export default function App() {
     } catch (error) {
       toast({
         title: 'onSignTx error',
-        description: `${error}`,
+        description: `${JSON.stringify(error)}`,
         variant: 'destructive',
       })
     }

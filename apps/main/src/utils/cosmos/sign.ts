@@ -103,6 +103,28 @@ export const makeSignMessage = <T extends Msg>({
   chainId,
   accountNumber,
 }: SignMessage<T>) => {
+  const signDoc = makeSignDirect({
+    pubKey,
+    msgs,
+    memo,
+    sequence,
+    fee,
+    chainId,
+    accountNumber,
+  })
+  const signBytes = makeSignBytes(signDoc)
+  return toHex(signBytes)
+}
+
+export const makeSignDirect = <T extends Msg>({
+  pubKey,
+  msgs,
+  memo,
+  sequence,
+  fee,
+  chainId,
+  accountNumber,
+}: SignMessage<T>) => {
   const txBodyFields = {
     typeUrl: TxBody.typeUrl,
     value: {
@@ -113,7 +135,6 @@ export const makeSignMessage = <T extends Msg>({
   const registry = getRegistry()
   const bodyBytes = registry.encode(txBodyFields)
 
-  // todo: ed25519
   const pubkey = encodePubkey({
     type: pubkeyType.secp256k1,
     value: toBase64(fromHex(pubKey)),
@@ -131,7 +152,5 @@ export const makeSignMessage = <T extends Msg>({
   console.log('bodyBytes', toHex(bodyBytes))
   console.log('authInfoBytes', toHex(authInfoBytes))
 
-  const signDoc = makeSignDoc(bodyBytes, authInfoBytes, chainId, accountNumber)
-  const signBytes = makeSignBytes(signDoc)
-  return toHex(signBytes)
+  return makeSignDoc(bodyBytes, authInfoBytes, chainId, accountNumber)
 }

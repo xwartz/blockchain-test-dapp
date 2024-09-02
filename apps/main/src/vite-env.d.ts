@@ -17,4 +17,5 @@ interface Window {
   $onekey: WalletProvider
   bitcoin: WalletProvider
   btcwallet: WalletProvider
+  cosmos: WalletProvider
 }
