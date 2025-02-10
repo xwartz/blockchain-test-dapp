@@ -8,5 +8,5 @@ export const toPsbtNetwork = (networkType: Network) => {
   if (networkType === Network.TESTNET || networkType === Network.SIGNET) {
     return networks.testnet
   }
-  return networks.regtest
+  return networks.bitcoin
 }

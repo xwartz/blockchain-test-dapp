@@ -23,7 +23,7 @@ export class OKXWallet extends WalletProvider {
     }
 
     this.okxWallet = window[okxProvider]
-    this.bitcoinNetwork = this.okxWallet?.bitcoinSignet
+    this.bitcoinNetwork = this.okxWallet?.bitcoin
   }
 
   connectWallet = async (): Promise<this> => {
@@ -104,7 +104,7 @@ export class OKXWallet extends WalletProvider {
   }
 
   getNetwork = async (): Promise<Network> => {
-    return Network.SIGNET
+    return this.bitcoinNetwork.getNetwork()
   }
 
   on = (eventName: string, callBack: () => void) => {
