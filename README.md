@@ -186,20 +186,20 @@ graph TD
 
 ## Deployment
 
-这个项目设计为可以独立部署到 Vercel 的多个应用。查看 [DEPLOYMENT.md](./DEPLOYMENT.md) 获取详细的部署指南。
+This project is designed to be deployed as multiple independent applications on Vercel. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment guide.
 
-### 快速部署
+### Quick Deployment
 
-每个应用都可以独立部署到 Vercel：
+Each application can be independently deployed to Vercel:
 
-1. **主应用 (导航)**: `blockchain-test-dapp-main.vercel.app`
-2. **BIP-322 应用**: `blockchain-test-dapp-bip322.vercel.app`
-3. **BIP-370 应用**: `blockchain-test-dapp-bip370.vercel.app`
-4. **Cosmos 应用**: `blockchain-test-dapp-cosmos.vercel.app`
+1. **Main App (Navigation)**: `blockchain-test-dapp-main.vercel.app`
+2. **BIP-322 App**: `blockchain-test-dapp-bip322.vercel.app`
+3. **BIP-370 App**: `blockchain-test-dapp-bip370.vercel.app`
+4. **Cosmos App**: `blockchain-test-dapp-cosmos.vercel.app`
 
-### 环境配置
+### Environment Configuration
 
-在生产环境中，导航应用会自动检测环境并生成正确的链接。在 Vercel 项目设置中配置：
+In production environment, the navigation app automatically detects the environment and generates correct links. Configure in Vercel project settings:
 
 ```
 VITE_BASE_URL=https://blockchain-test-dapp
@@ -242,7 +242,7 @@ npx turbo link
 
 ## Useful Links
 
-- [部署指南](./DEPLOYMENT.md)
+- [Deployment Guide](./DEPLOYMENT.md)
 - [Turborepo Documentation](https://turbo.build/repo/docs)
 - [BIP-322 Specification](https://github.com/bitcoin/bips/blob/master/bip-0322.mediawiki)
 - [BIP-370 Specification](https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki)
