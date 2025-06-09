@@ -1,7 +1,7 @@
 {
   "name": "blockchain-test-dapp-bip370",
-  "buildCommand": "cd ../.. && pnpm build --filter=bip370",
+  "buildCommand": "pnpm build --filter=bip370",
   "outputDirectory": "apps/bip370/dist",
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "pnpm install",
   "framework": "vite"
 }

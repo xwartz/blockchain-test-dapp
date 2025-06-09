@@ -30,34 +30,34 @@ Cosmos 应用      → blockchain-test-dapp-cosmos.vercel.app (Port 3003)
 
 #### 主应用 (Main)
 - **Project Name**: `blockchain-test-dapp-main`
-- **Root Directory**: `apps/main`
-- **Build Command**: `cd ../.. && pnpm build --filter=main`
-- **Output Directory**: `dist`
-- **Install Command**: `cd ../.. && pnpm install`
+- **Build Command**: `pnpm build --filter=main`
+- **Output Directory**: `apps/main/dist`
+- **Install Command**: `pnpm install`
+- **Framework**: `vite`
 - **Node.js Version**: 18.x
 
 #### BIP-322 应用
 - **Project Name**: `blockchain-test-dapp-bip322`
-- **Root Directory**: `apps/bip322`
-- **Build Command**: `cd ../.. && pnpm build --filter=bip322`
-- **Output Directory**: `dist`
-- **Install Command**: `cd ../.. && pnpm install`
+- **Build Command**: `pnpm build --filter=bip322`
+- **Output Directory**: `apps/bip322/dist`
+- **Install Command**: `pnpm install`
+- **Framework**: `vite`
 - **Node.js Version**: 18.x
 
 #### BIP-370 应用
 - **Project Name**: `blockchain-test-dapp-bip370`
-- **Root Directory**: `apps/bip370`
-- **Build Command**: `cd ../.. && pnpm build --filter=bip370`
-- **Output Directory**: `dist`
-- **Install Command**: `cd ../.. && pnpm install`
+- **Build Command**: `pnpm build --filter=bip370`
+- **Output Directory**: `apps/bip370/dist`
+- **Install Command**: `pnpm install`
+- **Framework**: `vite`
 - **Node.js Version**: 18.x
 
 #### Cosmos 应用
 - **Project Name**: `blockchain-test-dapp-cosmos`
-- **Root Directory**: `apps/cosmos`
-- **Build Command**: `cd ../.. && pnpm build --filter=cosmos`
-- **Output Directory**: `dist`
-- **Install Command**: `cd ../.. && pnpm install`
+- **Build Command**: `pnpm build --filter=cosmos`
+- **Output Directory**: `apps/cosmos/dist`
+- **Install Command**: `pnpm install`
+- **Framework**: `vite`
 - **Node.js Version**: 18.x
 
 ### 4. 环境变量配置
@@ -89,11 +89,15 @@ NODE_ENV=production
 
 ```json
 {
-  "buildCommand": "cd ../.. && pnpm build --filter=${VERCEL_GIT_REPO_SLUG}",
-  "installCommand": "cd ../.. && pnpm install",
+  "name": "blockchain-test-dapp-{app-name}",
+  "buildCommand": "pnpm build --filter={app-name}",
+  "outputDirectory": "apps/{app-name}/dist",
+  "installCommand": "pnpm install",
   "framework": "vite"
 }
 ```
+
+> **重要说明**: Vercel 会自动从项目根目录运行命令，所以不需要使用 `cd ../..` 来切换目录。
 
 ### 依赖优化
 
@@ -200,17 +204,40 @@ VITE_BASE_URL=https://yourdomain.com
    - 确保所有依赖都已正确安装
    - 检查 TypeScript 错误
 
-2. **路径问题**:
-   - 确认 Root Directory 设置正确
+2. **"No Output Directory named 'dist' found" 错误**:
+   - 确保 `outputDirectory` 设置为 `apps/{app-name}/dist`
+   - 不要在 `buildCommand` 中使用 `cd ../..`，Vercel 已经从项目根目录运行
+   - 检查构建日志确认 dist 目录是否被正确创建
+
+3. **路径问题**:
+   - 移除 vercel.json 中的 `rootDirectory` 设置（已弃用）
    - 检查相对路径引用
 
-3. **环境变量**:
+4. **环境变量**:
    - 确保环境变量在 Vercel 项目设置中正确配置
    - 变量名必须以 `VITE_` 开头才能在客户端使用
 
-4. **依赖问题**:
+5. **依赖问题**:
    - 清除 Vercel 缓存并重新部署
    - 检查 workspace 依赖是否正确解析
+
+## 最新配置变更 (2024年6月)
+
+我们最近更新了 Vercel 配置，以解决部署问题：
+
+1. **移除了不必要的目录切换**:
+   - 旧配置: `"buildCommand": "cd ../.. && pnpm build --filter=app"`
+   - 新配置: `"buildCommand": "pnpm build --filter=app"`
+
+2. **更新了输出目录路径**:
+   - 旧配置: `"outputDirectory": "dist"`
+   - 新配置: `"outputDirectory": "apps/{app-name}/dist"`
+
+3. **移除了 Root Directory 设置**:
+   - Vercel 现在自动从项目根目录运行命令
+   - 不再需要设置 `rootDirectory` 字段
+
+这些更改解决了 "No Output Directory named 'dist' found" 的部署错误。
 
 ## 注意事项
 
