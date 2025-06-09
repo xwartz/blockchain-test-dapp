@@ -2,7 +2,15 @@ import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { DirectSecp256k1HdWallet, coins } from '@cosmjs/proto-signing'
 import { chains } from 'chain-registry'
 import { stringToPath } from '@cosmjs/crypto'
-import { Button, Separator, useToast, Cable, Unplug } from '@ui/components'
+import {
+  Button,
+  Separator,
+  useToast,
+  Cable,
+  Unplug,
+  ThemeProvider,
+  ModeToggle,
+} from '@ui/components'
 import { pubkeyToAddress } from '@cosmjs/amino'
 import { toBase64, toHex } from '@cosmjs/encoding'
 import { calculateFee } from '@cosmjs/stargate'
@@ -46,7 +54,7 @@ const initApi = () => {
 
 const api = initApi()
 
-export default function App() {
+function AppContent() {
   const { toast } = useToast()
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -309,7 +317,10 @@ export default function App() {
 
   return (
     <div className="mt-4 grid w-full gap-2 grid w-full max-w-5xl mx-auto">
-      <Header />
+      <div className="flex items-center justify-between p-4">
+        <Header />
+        <ModeToggle />
+      </div>
       <Separator />
       <Mnemonic
         mnemonic={state.mnemonic}
@@ -385,5 +396,13 @@ function ConnectButton({
     <Button variant="destructive" onClick={onDisconnect}>
       <Unplug className="mr-2 h-4 w-4" /> Disconnect Wallet
     </Button>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AppContent />
+    </ThemeProvider>
   )
 }

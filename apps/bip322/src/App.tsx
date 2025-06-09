@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useMemo } from 'react'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider, ModeToggle } from '@ui/components'
 import {
   genPsbtOfBIP322Simple,
   verifyMessageOfBIP322Simple,
@@ -67,7 +67,10 @@ function reducer(state: State, action: Action): State {
 
 function Header() {
   return (
-    <div className="text-center m-6">
+    <div className="text-center m-6 relative">
+      <div className="absolute top-0 right-0">
+        <ModeToggle />
+      </div>
       <h2 className="border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         BIP-322
       </h2>
@@ -157,7 +160,7 @@ function SignMessage({
   )
 }
 
-function App() {
+function AppContent() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const provider = useDefaultProvider()
   const { toast } = useToast()
@@ -247,7 +250,7 @@ function App() {
   )
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <div>
       <Header />
       <Separator />
       <div className="p-5 text-center" style={{ maxWidth: '100%' }}>
@@ -268,6 +271,14 @@ function App() {
           setMsg={(msg) => dispatch({ type: 'SET_MSG', payload: msg })}
         />
       </div>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AppContent />
     </ThemeProvider>
   )
 }

@@ -119,6 +119,15 @@ packages/
 - Interchain UI components
 - Multi-chain support
 
+### Cross-App Theme Synchronization
+- **Seamless Theme Experience**: Theme changes sync across all applications
+- **Real-time Updates**: Theme switches in one app instantly reflect in others
+- **Persistent Storage**: Theme preferences persist across sessions
+- **URL Parameter Support**: Theme state passed between apps via URL parameters
+- **System Theme Detection**: Automatic light/dark mode based on system preferences
+
+For detailed information about the theme synchronization feature, see [THEME_SYNC.md](./THEME_SYNC.md).
+
 ## Tech Stack
 
 - **Framework**: React 18 + TypeScript
