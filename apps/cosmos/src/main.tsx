@@ -32,6 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           },
         },
       }}
+      throwErrors={false}
       logLevel={'DEBUG'}
     >
       <App />

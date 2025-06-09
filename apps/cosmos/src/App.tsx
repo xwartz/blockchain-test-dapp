@@ -180,7 +180,9 @@ function AppContent() {
         chain.bech32_prefix,
       )
       console.log('pubkeyAddress', pubkeyAddress)
-      await updateBalances(address)
+      if (address) {
+        await updateBalances(address)
+      }
     } catch (error) {
       toast({
         title: 'generateAddress error',
