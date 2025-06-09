@@ -1,5 +1,4 @@
 import { useReducer, useCallback, useMemo } from 'react'
-import { Cable, Unplug } from 'lucide-react'
 import { ThemeProvider } from '@/components/theme-provider'
 import {
   genPsbtOfBIP322Simple,
@@ -7,7 +6,15 @@ import {
 } from '@/utils/bip322/simple'
 import { useDefaultProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
-import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
+import {
+  Label,
+  Button,
+  useToast,
+  Separator,
+  Textarea,
+  Cable,
+  Unplug,
+} from '@ui/components'
 
 type State = {
   connected: boolean

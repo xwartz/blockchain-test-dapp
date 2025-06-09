@@ -21,65 +21,23 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
 
-  apps/main:
+  apps/bip322:
     dependencies:
       '@bitcoin-js/tiny-secp256k1-asmjs':
         specifier: ^2.2.3
         version: 2.2.3
-      '@cosmjs/amino':
-        specifier: ^0.32.4
-        version: 0.32.4
-      '@cosmjs/crypto':
-        specifier: ^0.32.4
-        version: 0.32.4
-      '@cosmjs/encoding':
-        specifier: ^0.32.4
-        version: 0.32.4
-      '@cosmjs/proto-signing':
-        specifier: ^0.32.4
-        version: 0.32.4
-      '@cosmjs/stargate':
-        specifier: ^0.32.4
-        version: 0.32.4
-      '@cosmjs/tendermint-rpc':
-        specifier: ^0.32.4
-        version: 0.32.4
-      '@cosmos-kit/keplr':
-        specifier: ^2.12.2
-        version: 2.12.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.14.0)(@walletconnect/types@2.14.0)
-      '@cosmos-kit/leap':
-        specifier: ^2.12.2
-        version: 2.12.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.14.0)(cosmjs-types@0.9.0)
-      '@cosmos-kit/react':
-        specifier: ^2.18.0
-        version: 2.18.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.29(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@interchain-ui/react':
-        specifier: ^1.23.29
-        version: 1.23.29(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.2
       bip32:
         specifier: ^4.0.0
         version: 4.0.0
       bitcoinjs-lib:
         specifier: ^6.1.6
         version: 6.1.6
-      chain-registry:
-        specifier: ^1.63.40
-        version: 1.63.40
-      cosmjs-types:
-        specifier: ^0.9.0
-        version: 0.9.0
       ecpair:
         specifier: ^2.1.0
         version: 2.1.0
-      lucide-react:
-        specifier: ^0.330.0
-        version: 0.330.0(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -87,6 +45,12 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@types/react':
         specifier: ^18.2.55
         version: 18.2.55
@@ -129,6 +93,237 @@ importers:
       vite-plugin-node-polyfills:
         specifier: ^0.22.0
         version: 0.22.0(rollup@4.18.0)(vite@5.1.0(@types/node@20.10.6))
+
+  apps/bip370:
+    dependencies:
+      '@bitcoin-js/tiny-secp256k1-asmjs':
+        specifier: ^2.2.3
+        version: 2.2.3
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      bip32:
+        specifier: ^4.0.0
+        version: 4.0.0
+      bitcoinjs-lib:
+        specifier: ^6.1.6
+        version: 6.1.6
+      ecpair:
+        specifier: ^2.1.0
+        version: 2.1.0
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/react':
+        specifier: ^18.2.55
+        version: 18.2.55
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint@8.56.0)(typescript@5.3.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.56.0)(typescript@5.3.3)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.5.0
+        version: 3.5.0(@swc/helpers@0.5.12)(vite@5.1.0(@types/node@20.10.6))
+      autoprefixer:
+        specifier: ^10.4.17
+        version: 10.4.17(postcss@8.4.35)
+      eslint:
+        specifier: ^8.56.0
+        version: 8.56.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.0(eslint@8.56.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.5
+        version: 0.4.5(eslint@8.56.0)
+      postcss:
+        specifier: ^8.4.35
+        version: 8.4.35
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.1(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.10.6)(typescript@5.3.3))
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vite:
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@20.10.6)
+      vite-plugin-node-polyfills:
+        specifier: ^0.22.0
+        version: 0.22.0(rollup@4.18.0)(vite@5.1.0(@types/node@20.10.6))
+
+  apps/cosmos:
+    dependencies:
+      '@cosmjs/amino':
+        specifier: ^0.32.4
+        version: 0.32.4
+      '@cosmjs/crypto':
+        specifier: ^0.32.4
+        version: 0.32.4
+      '@cosmjs/encoding':
+        specifier: ^0.32.4
+        version: 0.32.4
+      '@cosmjs/proto-signing':
+        specifier: ^0.32.4
+        version: 0.32.4
+      '@cosmjs/stargate':
+        specifier: ^0.32.4
+        version: 0.32.4
+      '@cosmjs/tendermint-rpc':
+        specifier: ^0.32.4
+        version: 0.32.4
+      '@cosmos-kit/keplr':
+        specifier: ^2.12.2
+        version: 2.12.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.14.0)(@walletconnect/types@2.14.0)
+      '@cosmos-kit/leap':
+        specifier: ^2.12.2
+        version: 2.12.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.14.0)(cosmjs-types@0.9.0)
+      '@cosmos-kit/react':
+        specifier: ^2.18.0
+        version: 2.18.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.29(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@interchain-ui/react':
+        specifier: ^1.23.29
+        version: 1.23.29(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      axios:
+        specifier: ^1.9.0
+        version: 1.9.0
+      chain-registry:
+        specifier: ^1.63.40
+        version: 1.63.40
+      cosmjs-types:
+        specifier: ^0.9.0
+        version: 0.9.0
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/react':
+        specifier: ^18.2.55
+        version: 18.2.55
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint@8.56.0)(typescript@5.3.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.56.0)(typescript@5.3.3)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.5.0
+        version: 3.5.0(@swc/helpers@0.5.12)(vite@5.1.0(@types/node@20.10.6))
+      autoprefixer:
+        specifier: ^10.4.17
+        version: 10.4.17(postcss@8.4.35)
+      eslint:
+        specifier: ^8.56.0
+        version: 8.56.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.0(eslint@8.56.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.5
+        version: 0.4.5(eslint@8.56.0)
+      postcss:
+        specifier: ^8.4.35
+        version: 8.4.35
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.1(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.10.6)(typescript@5.3.3))
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vite:
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@20.10.6)
+      vite-plugin-node-polyfills:
+        specifier: ^0.22.0
+        version: 0.22.0(rollup@4.18.0)(vite@5.1.0(@types/node@20.10.6))
+
+  apps/main:
+    dependencies:
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/react':
+        specifier: ^18.2.55
+        version: 18.2.55
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint@8.56.0)(typescript@5.3.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.56.0)(typescript@5.3.3)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.5.0
+        version: 3.5.0(@swc/helpers@0.5.12)(vite@5.1.0(@types/node@20.10.6))
+      autoprefixer:
+        specifier: ^10.4.17
+        version: 10.4.17(postcss@8.4.35)
+      eslint:
+        specifier: ^8.56.0
+        version: 8.56.0
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.0(eslint@8.56.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.5
+        version: 0.4.5(eslint@8.56.0)
+      postcss:
+        specifier: ^8.4.35
+        version: 8.4.35
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.1(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.10.6)(typescript@5.3.3))
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vite:
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@20.10.6)
 
   packages/eslint-config:
     devDependencies:
@@ -381,9 +576,6 @@ packages:
   '@chain-registry/keplr@1.68.47':
     resolution: {integrity: sha512-Nj/sJIRS2e7vyzySJFXX9+e/i+HOvGnp6RYcEB/8rPj/M0FrDpxqly14p48rb+fYmKy/+7qNGo9g166iroTTVw==}
 
-  '@chain-registry/types@0.45.33':
-    resolution: {integrity: sha512-2+4TafN+E1N3vImchXLH5/30HE870HTC4OoDihbnG1J0f7bRjWvkZYIFs4wFs4XXcpuqOVlAyH9YOuASlbEsVQ==}
-
   '@chain-registry/types@0.45.39':
     resolution: {integrity: sha512-FMHjtdks75by5HftCK6N0V6tIGFC2f8YPpvoKLaXOIm4a1NZMlOGVvjwHNCXFvKpJOxuBwSWQH0dEdx5Q9vOYg==}
 
@@ -392,6 +584,7 @@ packages:
 
   '@confio/ics23@0.6.8':
     resolution: {integrity: sha512-wB6uo+3A50m0sW/EWcU64xpV/8wShZ6bMTa7pF8eYsTrSkQA7oLUIJcs/wb8g4y2Oyq701BaGiO6n/ak5WXO1w==}
+    deprecated: Unmaintained. The codebase for this package was moved to https://github.com/cosmos/ics23 but then the JS implementation was removed in https://github.com/cosmos/ics23/pull/353. Please consult the maintainers of https://github.com/cosmos for further assistance.
 
   '@cosmjs/amino@0.32.4':
     resolution: {integrity: sha512-zKYOt6hPy8obIFtLie/xtygCkH9ZROiQ12UHfKsOkWaZfPQUvVbtgmu6R4Kn1tFLI/SRkw7eqhaogmW/3NYu/Q==}
@@ -2337,6 +2530,7 @@ packages:
 
   '@walletconnect/sign-client@2.14.0':
     resolution: {integrity: sha512-UrB3S3eLjPYfBLCN3WJ5u7+WcZ8kFMe/QIDqLf76Jk6TaLwkSUy563LvnSw4KW/kA+/cY1KBSdUDfX1tzYJJXg==}
+    deprecated: 'Reliability and performance improvements. See: https://github.com/WalletConnect/walletconnect-monorepo/releases'
 
   '@walletconnect/time@1.0.2':
     resolution: {integrity: sha512-uzdd9woDcJ1AaBZRhqy5rNC9laqWGErfc4dxA9a87mPdKOgWMD85mcFo9dIYIts/Jwocfwn07EC6EzclKubk/g==}
@@ -2505,8 +2699,8 @@ packages:
     resolution: {integrity: sha512-QbUdXJVTpvUTHU7871ppZkdOLBeGUKBQWHkHrvN2V9IQWGMt61zf3B45BtzjxEJzYuj0JBjBZP/hmYS/R9pmAw==}
     engines: {node: '>=4'}
 
-  axios@1.7.2:
-    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
+  axios@1.9.0:
+    resolution: {integrity: sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==}
 
   axobject-query@3.1.1:
     resolution: {integrity: sha512-goKlv8DZrK9hUh975fnHzhNIO4jUnFCfv/dszV5VwUGDFjI6vQ2VwoyjYjYNEbBE8AH87TduWP5uyDR1D+Iteg==}
@@ -3252,6 +3446,7 @@ packages:
   eslint@8.56.0:
     resolution: {integrity: sha512-Go19xM6T9puCOWntie1/P997aXxFsOi37JIHRWI514Hc6ZnaHGKY9xFhrU65RT6CcBEzZoGG1e6Nq+DT04ZtZQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -5674,7 +5869,7 @@ snapshots:
 
   '@chain-registry/keplr@1.68.2':
     dependencies:
-      '@chain-registry/types': 0.45.33
+      '@chain-registry/types': 0.45.39
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.2
@@ -5685,8 +5880,6 @@ snapshots:
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.2
-
-  '@chain-registry/types@0.45.33': {}
 
   '@chain-registry/types@0.45.39': {}
 
@@ -5799,7 +5992,7 @@ snapshots:
       '@cosmjs/socket': 0.32.4
       '@cosmjs/stream': 0.32.4
       '@cosmjs/utils': 0.32.4
-      axios: 1.7.2
+      axios: 1.9.0
       readonly-date: 1.0.0
       xstream: 11.14.0
     transitivePeerDependencies:
@@ -5813,7 +6006,7 @@ snapshots:
     dependencies:
       '@chain-registry/client': 1.48.39
       '@chain-registry/keplr': 1.68.47
-      '@chain-registry/types': 0.45.33
+      '@chain-registry/types': 0.45.39
       '@cosmjs/amino': 0.32.4
       '@cosmjs/cosmwasm-stargate': 0.32.4
       '@cosmjs/proto-signing': 0.32.4
@@ -6054,7 +6247,7 @@ snapshots:
 
   '@cosmos-kit/react-lite@2.13.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@chain-registry/types': 0.45.33
+      '@chain-registry/types': 0.45.39
       '@cosmos-kit/core': 2.13.1
       '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)
       '@types/react': 18.2.55
@@ -6086,7 +6279,7 @@ snapshots:
 
   '@cosmos-kit/react@2.18.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.29(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@chain-registry/types': 0.45.33
+      '@chain-registry/types': 0.45.39
       '@cosmos-kit/core': 2.13.1
       '@cosmos-kit/react-lite': 2.13.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@interchain-ui/react': 1.23.29(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -6507,7 +6700,7 @@ snapshots:
       '@walletconnect/types': 2.14.0
       buffer: 6.0.3
       deepmerge: 4.3.1
-      long: 4.0.0
+      long: 5.2.3
 
   '@leapwallet/cosmos-snap-provider@0.1.26':
     dependencies:
@@ -8822,7 +9015,7 @@ snapshots:
 
   axe-core@4.9.1: {}
 
-  axios@1.7.2:
+  axios@1.9.0:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -9032,7 +9225,7 @@ snapshots:
 
   chain-registry@1.63.40:
     dependencies:
-      '@chain-registry/types': 0.45.33
+      '@chain-registry/types': 0.45.39
 
   chalk@2.4.2:
     dependencies:

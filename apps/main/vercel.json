@@ -1,0 +1,7 @@
+{
+  "name": "blockchain-test-dapp-main",
+  "buildCommand": "cd ../.. && pnpm build --filter=main",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "vite"
+}

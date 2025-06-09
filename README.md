@@ -1,7 +1,6 @@
-# Turborepo starter with Vite+React app and shadcn/ui for UI components
+# Blockchain Test DApp Monorepo
 
-This is code repository for [this article](https://articles.wesionary.team/react-vite-with-shadcn-ui-for-ui-components-all-in-turborepo-8af3deafa58e).
-All the details about folder structure and configurations are explained in the article.
+A Turborepo monorepo containing multiple blockchain testing applications built with React, TypeScript, and Vite.
 
 ## What's inside?
 
@@ -9,58 +8,247 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `main`: a Vite + Reactjs app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `main`: Navigation app that provides links to all test DApps (Port 3000)
+- `bip322`: Standalone BIP-322 message signing test application (Port 3001)
+- `bip370`: Standalone BIP-370 PSBT test application (Port 3002)
+- `cosmos`: Standalone Cosmos blockchain test application (Port 3003)
+- `@repo/ui`: Shared React component library with shadcn/ui components
+- `@repo/eslint-config`: Shared ESLint configurations
+- `@repo/typescript-config`: Shared TypeScript configurations
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
+## Development
+
+### Install Dependencies
+
+```bash
+pnpm install
+```
+
+### Start Individual Apps
+
+```bash
+# Start navigation app (main) on port 3000
+pnpm dev:main
+
+# Start BIP-322 app on port 3001
+pnpm dev:bip322
+
+# Start BIP-370 app on port 3002
+pnpm dev:bip370
+
+# Start Cosmos app on port 3003
+pnpm dev:cosmos
+
+# Start all apps in parallel
+pnpm dev:all
+```
+
+### Development URLs
+
+When running in development mode, the apps are available at:
+
+- **Main (Navigation)**: http://localhost:3000
+- **BIP-322**: http://localhost:3001
+- **BIP-370**: http://localhost:3002
+- **Cosmos**: http://localhost:3003
 
 ### Build
 
-To build all apps and packages, run the following command:
+To build all apps and packages:
 
-```
-cd main
+```bash
 pnpm build
 ```
 
-### Develop
+### Lint
 
-To develop all apps and packages, run the following command:
+To lint all apps and packages:
+
+```bash
+pnpm lint
+```
+
+### Format
+
+To format all code:
+
+```bash
+pnpm format
+```
+
+## Project Structure
 
 ```
-cd main
-pnpm dev
+apps/
+├── main/           # Navigation app (Port 3000)
+├── bip322/         # BIP-322 test app (Port 3001)
+├── bip370/         # BIP-370 test app (Port 3002)
+└── cosmos/         # Cosmos test app (Port 3003)
+
+packages/
+├── ui/             # Shared UI components (shadcn/ui)
+├── eslint-config/  # Shared ESLint config
+└── typescript-config/ # Shared TypeScript config
 ```
 
-### Remote Caching
+## Features
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### Main App (Navigation)
+- Central hub with links to all test applications
+- Environment-aware URL generation (dev/prod)
+- Modern, responsive UI with dark mode support
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+### BIP-322 App
+- Bitcoin message signing and verification
+- BIP-322 standard implementation
+- Bitcoin address validation
+- Wallet provider integration (MetaMask, OKX, OneKey, imToken)
+
+### BIP-370 App
+- PSBT (Partially Signed Bitcoin Transaction) creation
+- Bitcoin transaction building and signing
+- BIP-370 standard implementation
+- Advanced transaction analysis tools
+
+### Cosmos App
+- Cosmos wallet integration (Keplr, Leap)
+- Transaction signing and broadcasting
+- Chain registry integration
+- Interchain UI components
+- Multi-chain support
+
+## Tech Stack
+
+- **Framework**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Monorepo**: Turborepo
+- **Package Manager**: pnpm
+- **Blockchain Libraries**:
+  - bitcoinjs-lib (Bitcoin apps)
+  - @cosmjs/* (Cosmos app)
+  - @cosmos-kit/* (Cosmos wallet integration)
+
+## Architecture
+
+This project follows a modular monorepo architecture where:
+
+1. **Independent Apps**: Each functionality is separated into its own application for better maintainability and deployment flexibility.
+
+2. **Shared Components**: Common UI components are shared through the `@repo/ui` package.
+
+3. **Environment Awareness**: Apps automatically detect their environment and adjust URLs accordingly.
+
+4. **Type Safety**: Strict TypeScript configuration ensures type safety across all applications.
+
+### Project Architecture Diagram
+
+```mermaid
+graph TD
+    A[Main App<br/>Port 3000<br/>Navigation Hub] --> B[BIP-322 App<br/>Port 3001<br/>Bitcoin Message Signing]
+    A --> C[BIP-370 App<br/>Port 3002<br/>PSBT Transactions]
+    A --> D[Cosmos App<br/>Port 3003<br/>Cosmos Ecosystem]
+
+    E[Shared UI Package<br/>@repo/ui<br/>shadcn/ui + Icons] --> A
+    E --> B
+    E --> C
+    E --> D
+
+    F[ESLint Config<br/>@repo/eslint-config] --> A
+    F --> B
+    F --> C
+    F --> D
+
+    G[TypeScript Config<br/>@repo/typescript-config] --> A
+    G --> B
+    G --> C
+    G --> D
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#fff3e0
+```
+
+## Deployment
+
+这个项目设计为可以独立部署到 Vercel 的多个应用。查看 [DEPLOYMENT.md](./DEPLOYMENT.md) 获取详细的部署指南。
+
+### 快速部署
+
+每个应用都可以独立部署到 Vercel：
+
+1. **主应用 (导航)**: `blockchain-test-dapp-main.vercel.app`
+2. **BIP-322 应用**: `blockchain-test-dapp-bip322.vercel.app`
+3. **BIP-370 应用**: `blockchain-test-dapp-bip370.vercel.app`
+4. **Cosmos 应用**: `blockchain-test-dapp-cosmos.vercel.app`
+
+### 环境配置
+
+在生产环境中，导航应用会自动检测环境并生成正确的链接。在 Vercel 项目设置中配置：
 
 ```
-cd my-turborepo
+VITE_BASE_URL=https://blockchain-test-dapp
+```
+
+## Development Tips
+
+### Adding New UI Components
+
+To add new shadcn/ui components:
+
+```bash
+pnpm ui:add <component-name>
+```
+
+### Package Dependencies
+
+Each app manages its own dependencies while sharing common packages through the workspace configuration. This approach:
+
+- Ensures each app only includes necessary dependencies
+- Maintains clear dependency boundaries
+- Allows for independent versioning
+
+### Icon Usage
+
+All Lucide React icons are exported from `@repo/ui` package. Import them like:
+
+```tsx
+import { Button, Moon, Sun, Cable } from '@ui/components'
+```
+
+## Remote Caching
+
+Turborepo can use [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines. To enable:
+
+```bash
 npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
 npx turbo link
 ```
 
 ## Useful Links
 
-Learn more about the power of Turborepo:
+- [部署指南](./DEPLOYMENT.md)
+- [Turborepo Documentation](https://turbo.build/repo/docs)
+- [BIP-322 Specification](https://github.com/bitcoin/bips/blob/master/bip-0322.mediawiki)
+- [BIP-370 Specification](https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki)
+- [Cosmos SDK Documentation](https://docs.cosmos.network/)
+- [shadcn/ui Documentation](https://ui.shadcn.com/)
+- [Vercel Documentation](https://vercel.com/docs)
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test all applications
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details.
