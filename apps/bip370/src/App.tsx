@@ -1,5 +1,5 @@
 import { useReducer, useCallback } from 'react'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider, ModeToggle } from '@ui/components'
 import { toPsbtNetwork } from '@/utils/network/transport'
 import { useDefaultProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
@@ -272,7 +272,10 @@ function App() {
 
 function Header() {
   return (
-    <div className="text-center m-6">
+    <div className="text-center m-6 relative">
+      <div className="absolute top-0 right-0">
+        <ModeToggle />
+      </div>
       <h2 className="border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         BIP-370
       </h2>
