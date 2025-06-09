@@ -153,7 +153,7 @@ function AppContent() {
     try {
       if (!state.mnemonic || !state.selectedChainName) return
 
-      if (!chain) return
+      if (!chain || !chain.bech32_prefix) return
 
       console.log('chain', chain)
 
@@ -180,9 +180,7 @@ function AppContent() {
         chain.bech32_prefix,
       )
       console.log('pubkeyAddress', pubkeyAddress)
-      if (address) {
-        await updateBalances(address)
-      }
+      await updateBalances(address)
     } catch (error) {
       toast({
         title: 'generateAddress error',
