@@ -8,6 +8,11 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:main": "pnpm --filter main dev",
+    "dev:bip322": "pnpm --filter bip322 dev",
+    "dev:bip370": "pnpm --filter bip370 dev",
+    "dev:cosmos": "pnpm --filter cosmos dev",
+    "dev:all": "turbo dev --parallel",
     "lint": "turbo lint",
     "ui:add": "pnpm --filter ui ui:add",
     "format": "prettier --write ."

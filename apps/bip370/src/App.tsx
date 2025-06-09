@@ -1,12 +1,20 @@
-import React, { useReducer, useCallback } from 'react'
-import { Cable, Send, Unplug } from 'lucide-react'
+import { useReducer, useCallback } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { toPsbtNetwork } from '@/utils/network/transport'
 import { useDefaultProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
 import { createPSBT } from '@/utils/psbt/create'
 import { decodeByNode, decodeFromHex, getSignature } from '@/utils/psbt/decode'
-import { Label, Button, useToast, Separator, Textarea } from '@ui/components'
+import {
+  Label,
+  Button,
+  useToast,
+  Separator,
+  Textarea,
+  Cable,
+  Send,
+  Unplug,
+} from '@ui/components'
 
 // State and Action types
 type State = {

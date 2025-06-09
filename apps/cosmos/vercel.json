@@ -1,0 +1,7 @@
+{
+  "name": "blockchain-test-dapp-cosmos",
+  "buildCommand": "cd ../.. && pnpm build --filter=cosmos",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "vite"
+}

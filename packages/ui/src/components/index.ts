@@ -11,3 +11,18 @@ export * from './ui/use-toast'
 export * from './ui/separator'
 export * from './ui/select'
 export * from './ui/switch'
+
+// Export commonly used lucide-react icons
+export {
+  Cable,
+  Unplug,
+  Moon,
+  Sun,
+  Send,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  Circle,
+  X
+} from 'lucide-react'
