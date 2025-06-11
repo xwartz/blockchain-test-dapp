@@ -232,7 +232,7 @@ function App() {
   }, [provider, state.signature, toast])
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider>
       <Header />
       <Separator />
 

@@ -46,6 +46,12 @@ function AppContent() {
       url: getAppUrl('cosmos', 3003, theme),
       icon: '🌌',
     },
+    {
+      name: 'TON',
+      description: 'TON blockchain wallet and TonConnect bridge',
+      url: getAppUrl('ton', 3004, theme),
+      icon: '💎',
+    },
   ]
 
   return (
@@ -106,6 +112,7 @@ function AppContent() {
               <div>pnpm dev:bip322 # Port 3001</div>
               <div>pnpm dev:bip370 # Port 3002</div>
               <div>pnpm dev:cosmos # Port 3003</div>
+              <div>pnpm dev:ton # Port 3004</div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               💡 Theme will sync across all apps automatically
