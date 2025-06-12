@@ -277,7 +277,7 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider>
       <AppContent />
     </ThemeProvider>
   )
