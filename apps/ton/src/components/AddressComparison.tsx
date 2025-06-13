@@ -29,6 +29,10 @@ export default function AddressComparison() {
   const testMnemonic =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
 
+  // BIP39 测试助记词
+  const testBip39Mnemonic =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent'
+
   // TonKeeper 期望的地址
   const tonkeeperExpected = 'UQAzWZa6nM5mJev91wGc7VCSfBoIsYRqKJpV78N8Add9-RKY'
 
@@ -36,12 +40,14 @@ export default function AddressComparison() {
     setIsGenerating(true)
     try {
       const mnemonicWords = testMnemonic.split(' ')
+      const bip39Words = testBip39Mnemonic.split(' ')
       setMnemonic(testMnemonic)
 
       const addressList: AddressInfo[] = []
       const workchain = 0
 
-      console.log('Testing mnemonic:', testMnemonic)
+      console.log('Testing TON mnemonic:', testMnemonic)
+      console.log('Testing BIP39 mnemonic:', testBip39Mnemonic)
 
       // 方法1: 使用 TonKeeper 的标准 TON 助记词处理 (mnemonicToPrivateKey)
       try {
@@ -64,7 +70,9 @@ export default function AddressComparison() {
             urlSafe: true,
             bounceable: false,
           }),
-          rawAddress: `${v4r2Ton.address.workChain}:${v4r2Ton.address.hash.toString('hex')}`,
+          rawAddress: `${
+            v4r2Ton.address.workChain
+          }:${v4r2Ton.address.hash.toString('hex')}`,
           config: 'mnemonicToPrivateKey + no walletId',
         })
 
@@ -83,7 +91,9 @@ export default function AddressComparison() {
               urlSafe: true,
               bounceable: false,
             }),
-            rawAddress: `${v4r2WithId.address.workChain}:${v4r2WithId.address.hash.toString('hex')}`,
+            rawAddress: `${
+              v4r2WithId.address.workChain
+            }:${v4r2WithId.address.hash.toString('hex')}`,
             config: `mnemonicToPrivateKey + walletId: ${walletId}`,
           })
         }
@@ -103,14 +113,45 @@ export default function AddressComparison() {
             urlSafe: true,
             bounceable: false,
           }),
-          rawAddress: `${v5r1Ton.address.workChain}:${v5r1Ton.address.hash.toString('hex')}`,
+          rawAddress: `${
+            v5r1Ton.address.workChain
+          }:${v5r1Ton.address.hash.toString('hex')}`,
           config: 'mnemonicToPrivateKey + networkGlobalId: -239',
         })
       } catch (error) {
         console.error('TonKeeper mnemonicToPrivateKey failed:', error)
       }
 
-      // 方法2: 使用我们原来的方法 (mnemonicToWalletKey)
+      // 方法2: 测试 BIP39 助记词支持
+      try {
+        console.log('Testing BIP39 mnemonic support...')
+        const wallet = new TonWallet()
+
+        // 测试使用我们的钱包类处理 BIP39 助记词
+        const bip39V4r2Wallet = await wallet.createWallet(bip39Words, {
+          version: 'v4R2',
+        })
+        addressList.push({
+          version: 'V4R2 (Our BIP39 Support)',
+          address: bip39V4r2Wallet.address,
+          rawAddress: bip39V4r2Wallet.rawAddress || '',
+          config: 'BIP39 mnemonic + TonWallet class',
+        })
+
+        const bip39V5r1Wallet = await wallet.createWallet(bip39Words, {
+          version: 'v5R1',
+        })
+        addressList.push({
+          version: 'V5R1 (Our BIP39 Support)',
+          address: bip39V5r1Wallet.address,
+          rawAddress: bip39V5r1Wallet.rawAddress || '',
+          config: 'BIP39 mnemonic + V5R1 + networkGlobalId: -239',
+        })
+      } catch (error) {
+        console.error('BIP39 support test failed:', error)
+      }
+
+      // 方法3: 使用我们原来的方法 (mnemonicToWalletKey)
       try {
         console.log('Testing our mnemonicToWalletKey method...')
         const ourKeyPair = await mnemonicToWalletKey(mnemonicWords)
@@ -131,7 +172,9 @@ export default function AddressComparison() {
             urlSafe: true,
             bounceable: false,
           }),
-          rawAddress: `${v4r2Our.address.workChain}:${v4r2Our.address.hash.toString('hex')}`,
+          rawAddress: `${
+            v4r2Our.address.workChain
+          }:${v4r2Our.address.hash.toString('hex')}`,
           config: 'mnemonicToWalletKey + no walletId',
         })
 
@@ -150,14 +193,16 @@ export default function AddressComparison() {
             urlSafe: true,
             bounceable: false,
           }),
-          rawAddress: `${v5r1Our.address.workChain}:${v5r1Our.address.hash.toString('hex')}`,
+          rawAddress: `${
+            v5r1Our.address.workChain
+          }:${v5r1Our.address.hash.toString('hex')}`,
           config: 'mnemonicToWalletKey + networkGlobalId: -239',
         })
       } catch (error) {
         console.error('Our mnemonicToWalletKey failed:', error)
       }
 
-      // 方法3: 使用我们的钱包类 (for comparison)
+      // 方法4: 使用我们的钱包类 (for comparison)
       try {
         console.log('Testing our TonWallet class...')
         const wallet = new TonWallet()
@@ -262,10 +307,71 @@ export default function AddressComparison() {
           </Button>
 
           <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <h3 className="font-medium text-sm mb-2">地址格式测试:</h3>
+            <h3 className="font-medium text-sm mb-2">助记词验证测试:</h3>
             <div className="text-xs space-y-1 text-gray-700 dark:text-gray-300">
-              <p>测试 TON Connect 地址格式转换功能</p>
-              <div className="mt-2">
+              <p>测试不同助记词验证方法</p>
+              <div className="mt-2 space-x-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      const { mnemonicValidate } = await import('@ton/crypto')
+                      const testWords = testMnemonic.split(' ')
+
+                      console.log('Testing mnemonic validation...')
+                      console.log('Mnemonic:', testMnemonic)
+                      console.log('Word count:', testWords.length)
+
+                      // 测试标准 TON 验证
+                      const isValidTon = await mnemonicValidate(testWords)
+                      console.log('Standard TON validation:', isValidTon)
+
+                      // 测试 BIP39 验证
+                      let isValidBip39 = false
+                      try {
+                        const { validateMnemonic } = await import('bip39')
+                        isValidBip39 = validateMnemonic(testMnemonic)
+                        console.log('BIP39 validation:', isValidBip39)
+                      } catch (err) {
+                        console.log('BIP39 not available:', err)
+                      }
+
+                      // 测试实际的密钥生成
+                      let keyGenSuccess = false
+                      try {
+                        const { mnemonicToPrivateKey } = await import(
+                          '@ton/crypto'
+                        )
+                        const keyPair = await mnemonicToPrivateKey(testWords)
+                        keyGenSuccess = !!keyPair
+                        console.log('Key generation success:', keyGenSuccess)
+                        console.log(
+                          'Generated public key:',
+                          keyPair.publicKey.toString('hex'),
+                        )
+                      } catch (err) {
+                        console.log('Key generation failed:', err)
+                      }
+
+                      toast({
+                        title: '助记词验证结果',
+                        description: `TON: ${isValidTon}, BIP39: ${isValidBip39}, KeyGen: ${keyGenSuccess}`,
+                      })
+                    } catch (error) {
+                      console.error('Validation test failed:', error)
+                      toast({
+                        title: '验证测试失败',
+                        description:
+                          error instanceof Error ? error.message : '未知错误',
+                        variant: 'destructive',
+                      })
+                    }
+                  }}
+                >
+                  测试助记词验证
+                </Button>
+
                 <Button
                   size="sm"
                   variant="outline"
@@ -283,7 +389,9 @@ export default function AddressComparison() {
                         )
                       } else {
                         const addr = Address.parse(testAddress)
-                        const rawFormat = `${addr.workChain}:${addr.hash.toString('hex')}`
+                        const rawFormat = `${
+                          addr.workChain
+                        }:${addr.hash.toString('hex')}`
                         console.log('🔄 User-friendly address:', testAddress)
                         console.log('🔄 Raw format:', rawFormat)
 

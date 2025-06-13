@@ -215,7 +215,7 @@ export class TonConnectWalletBridge {
     }
   }
 
-  // 处理dApp生成的连接URL
+  // 处理 dApp 生成的连接 URL
   async handleConnectionUrl(url: string): Promise<void> {
     try {
       const parsedParams = this.parseConnectionUrl(url)
@@ -225,7 +225,7 @@ export class TonConnectWalletBridge {
         throw new Error('Wallet not available')
       }
 
-      // dApp的sessionId就是它的公钥
+      // dApp 的 sessionId 就是它的公钥
       const dAppSessionId = parsedParams.id
       console.log('dApp Session ID (Public Key):', dAppSessionId)
 
@@ -555,7 +555,9 @@ export class TonConnectWalletBridge {
       await this.sendError(
         from,
         request.id,
-        `Failed to create transaction: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to create transaction: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
       )
     }
   }
