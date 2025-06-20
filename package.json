@@ -13,6 +13,7 @@
     "dev:bip370": "pnpm --filter bip370 dev",
     "dev:cosmos": "pnpm --filter cosmos dev",
     "dev:ton": "pnpm --filter ton dev",
+    "dev:imtoken": "pnpm --filter imtoken dev",
     "dev:all": "turbo dev --parallel",
     "lint": "turbo lint",
     "ui:add": "pnpm --filter ui ui:add",
