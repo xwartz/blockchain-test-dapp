@@ -28,5 +28,9 @@ export {
   ChevronUp,
   ChevronRight,
   Circle,
-  X
+  X,
+  Loader2,
+  Wallet,
+  Bitcoin,
+  Coins,
 } from 'lucide-react'

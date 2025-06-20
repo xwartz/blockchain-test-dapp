@@ -1,0 +1,7 @@
+{
+  "name": "blockchain-test-dapp-imtoken",
+  "buildCommand": "cd ../.. && pnpm build --filter=imtoken",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "vite"
+}
