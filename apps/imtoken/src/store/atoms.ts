@@ -68,7 +68,7 @@ export const persistedBitcoinAddressAtom = atom(
 )
 
 // Atom for clearing all data
-export const clearAllDataAtom = atom(null, (get, set) => {
+export const clearAllDataAtom = atom(null, (_, set) => {
   // Clear state
   set(isConnectedAtom, false)
   set(isLoadingAtom, false)
@@ -83,7 +83,7 @@ export const clearAllDataAtom = atom(null, (get, set) => {
 })
 
 // Atom for initializing state
-export const initializeAtom = atom(null, (get, set) => {
+export const initializeAtom = atom(null, (_, set) => {
   // Restore addresses from local storage
   const ethAddress = localStorage.getItem('imtoken_ethereum_address')
   const btcAddress = localStorage.getItem('imtoken_bitcoin_address')
