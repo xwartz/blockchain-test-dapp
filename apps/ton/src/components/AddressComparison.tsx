@@ -340,9 +340,8 @@ export default function AddressComparison() {
                       // 测试实际的密钥生成
                       let keyGenSuccess = false
                       try {
-                        const { mnemonicToPrivateKey } = await import(
-                          '@ton/crypto'
-                        )
+                        const { mnemonicToPrivateKey } =
+                          await import('@ton/crypto')
                         const keyPair = await mnemonicToPrivateKey(testWords)
                         keyGenSuccess = !!keyPair
                         console.log('Key generation success:', keyGenSuccess)

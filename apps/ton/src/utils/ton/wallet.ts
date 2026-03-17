@@ -606,4 +606,3 @@ export class TonWallet {
     }
   }
 }
-

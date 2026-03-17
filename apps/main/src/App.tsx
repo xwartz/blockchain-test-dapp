@@ -1,74 +1,58 @@
-import { ThemeProvider, ModeToggle, Separator, useTheme } from '@ui/components'
+import { ThemeProvider, Separator } from '@ui/components'
 
 // 环境配置
 const isDev = import.meta.env.DEV
-const getAppUrl = (appName: string, port?: number, theme?: string) => {
-  let baseUrl: string
-
+const getAppUrl = (appName: string, port?: number) => {
   if (isDev) {
-    // 开发环境使用 localhost
-    baseUrl = `http://localhost:${port}`
-  } else {
-    // 生产环境使用环境变量或默认的 Vercel 部署 URL
-    const envBaseUrl =
-      import.meta.env.VITE_BASE_URL || 'https://blockchain-test-dapp'
-    baseUrl = `${envBaseUrl}-${appName}.vercel.app`
+    return `http://localhost:${port}`
   }
-
-  // 添加主题参数
-  if (theme && theme !== 'system') {
-    const separator = baseUrl.includes('?') ? '&' : '?'
-    baseUrl += `${separator}theme=${theme}`
-  }
-
-  return baseUrl
+  const envBaseUrl =
+    import.meta.env.VITE_BASE_URL || 'https://blockchain-test-dapp'
+  return `${envBaseUrl}-${appName}.vercel.app`
 }
 
 function AppContent() {
-  const { theme } = useTheme()
-
   const appLinks = [
     {
       name: 'BIP-322',
       description: 'Bitcoin message signing and verification',
-      url: getAppUrl('bip322', 3001, theme),
+      url: getAppUrl('bip322', 3001),
       icon: '₿',
     },
     {
       name: 'BIP-370',
       description: 'PSBT creation and manipulation',
-      url: getAppUrl('bip370', 3002, theme),
+      url: getAppUrl('bip370', 3002),
       icon: '₿',
     },
     {
       name: 'Cosmos',
       description: 'Cosmos blockchain wallet integration',
-      url: getAppUrl('cosmos', 3003, theme),
+      url: getAppUrl('cosmos', 3003),
       icon: '🌌',
     },
     {
       name: 'TON',
       description: 'TON blockchain wallet and TonConnect bridge',
-      url: getAppUrl('ton', 3004, theme),
+      url: getAppUrl('ton', 3004),
       icon: '💎',
     },
     {
       name: 'imToken',
       description: 'imToken wallet integration with Ethereum & Bitcoin',
-      url: getAppUrl('imtoken', 3005, theme),
+      url: getAppUrl('imtoken', 3005),
       icon: '🔑',
     },
     {
       name: 'TIP-712',
       description: 'TIP-712 payload signing and verification',
-      url: getAppUrl('tip712', 3006, theme),
+      url: getAppUrl('tip712', 3006),
       icon: 'T',
     },
   ]
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <ModeToggle />
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-8">
       <div className="mb-5 flex flex-col items-center">
         <h2 className="text-lg font-semibold mt-4">Blockchain Test DApp</h2>
         <a
@@ -80,11 +64,11 @@ function AppContent() {
         </a>
       </div>
 
-      <Separator />
+      <Separator className="max-w-2xl w-full" />
 
-      <div className="mt-5 max-w-2xl">
+      <div className="mt-5 w-full max-w-2xl">
         <h4 className="font-semibold mb-4">Test DApps:</h4>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {appLinks.map((app) => (
             <a
               key={app.name}
@@ -110,7 +94,7 @@ function AppContent() {
         </div>
       </div>
 
-      <div className="mt-8 p-4 bg-muted rounded-lg max-w-2xl">
+      <div className="mt-8 p-4 bg-muted rounded-lg w-full max-w-2xl">
         <h5 className="font-semibold mb-2">
           {isDev ? 'Development Mode' : 'Production Mode'}
         </h5>
@@ -128,7 +112,7 @@ function AppContent() {
               <div>pnpm dev:ton # Port 3005</div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              💡 Theme will sync across all apps automatically
+              💡 Each DApp runs independently in its own window
             </p>
           </>
         ) : (

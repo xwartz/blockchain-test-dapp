@@ -9,7 +9,6 @@ import {
   Cable,
   Unplug,
   ThemeProvider,
-  ModeToggle,
 } from '@ui/components'
 import { pubkeyToAddress } from '@cosmjs/amino'
 import { toBase64, toHex } from '@cosmjs/encoding'
@@ -316,10 +315,9 @@ function AppContent() {
   }
 
   return (
-    <div className="mt-4 grid w-full gap-2 grid w-full max-w-5xl mx-auto">
-      <div className="flex items-center justify-between p-4">
+    <div className="mt-4 grid w-full gap-2 max-w-5xl mx-auto px-4">
+      <div className="py-4">
         <Header />
-        <ModeToggle />
       </div>
       <Separator />
       <Mnemonic

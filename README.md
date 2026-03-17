@@ -96,23 +96,27 @@ packages/
 ## Features
 
 ### Main App (Navigation)
+
 - Central hub with links to all test applications
 - Environment-aware URL generation (dev/prod)
 - Modern, responsive UI with dark mode support
 
 ### BIP-322 App
+
 - Bitcoin message signing and verification
 - BIP-322 standard implementation
 - Bitcoin address validation
 - Wallet provider integration (MetaMask, OKX, OneKey, imToken)
 
 ### BIP-370 App
+
 - PSBT (Partially Signed Bitcoin Transaction) creation
 - Bitcoin transaction building and signing
 - BIP-370 standard implementation
 - Advanced transaction analysis tools
 
 ### Cosmos App
+
 - Cosmos wallet integration (Keplr, Leap)
 - Transaction signing and broadcasting
 - Chain registry integration
@@ -120,6 +124,7 @@ packages/
 - Multi-chain support
 
 ### Cross-App Theme Synchronization
+
 - **Seamless Theme Experience**: Theme changes sync across all applications
 - **Real-time Updates**: Theme switches in one app instantly reflect in others
 - **Persistent Storage**: Theme preferences persist across sessions
@@ -137,8 +142,8 @@ For detailed information about the theme synchronization feature, see [THEME_SYN
 - **Package Manager**: pnpm
 - **Blockchain Libraries**:
   - bitcoinjs-lib (Bitcoin apps)
-  - @cosmjs/* (Cosmos app)
-  - @cosmos-kit/* (Cosmos wallet integration)
+  - @cosmjs/\* (Cosmos app)
+  - @cosmos-kit/\* (Cosmos wallet integration)
 
 ## Architecture
 

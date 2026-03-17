@@ -41,7 +41,9 @@ export async function connectWallet(): Promise<{
 
   const tronWeb = getTronWeb()
   if (!tronWeb?.defaultAddress?.base58) {
-    throw new Error('No Tron wallet found or wallet is locked. Please unlock your wallet.')
+    throw new Error(
+      'No Tron wallet found or wallet is locked. Please unlock your wallet.',
+    )
   }
 
   return {
@@ -62,15 +64,21 @@ function extractSignature(raw: unknown): string {
     if (typeof obj.signature === 'string') return obj.signature
     if (typeof obj.result === 'string') return obj.result
   }
-  throw new Error(`Unexpected signTypedData return value: ${JSON.stringify(raw)}`)
+  throw new Error(
+    `Unexpected signTypedData return value: ${JSON.stringify(raw)}`,
+  )
 }
 
 /** Build EIP712Domain type fields from a domain object */
-function buildEIP712DomainTypes(domain: TIP712Domain): { name: string; type: string }[] {
+function buildEIP712DomainTypes(
+  domain: TIP712Domain,
+): { name: string; type: string }[] {
   const fields: { name: string; type: string }[] = []
   if (domain.name !== undefined) fields.push({ name: 'name', type: 'string' })
-  if (domain.version !== undefined) fields.push({ name: 'version', type: 'string' })
-  if (domain.chainId !== undefined) fields.push({ name: 'chainId', type: 'uint256' })
+  if (domain.version !== undefined)
+    fields.push({ name: 'version', type: 'string' })
+  if (domain.chainId !== undefined)
+    fields.push({ name: 'chainId', type: 'uint256' })
   if (domain.verifyingContract !== undefined)
     fields.push({ name: 'verifyingContract', type: 'address' })
   if (domain.salt !== undefined) fields.push({ name: 'salt', type: 'bytes32' })
@@ -104,7 +112,9 @@ export async function signTypedData(
 
     // Infer primaryType from types keys when not provided
     const resolvedPrimaryType =
-      primaryType ?? Object.keys(types).find((k) => k !== 'EIP712Domain') ?? Object.keys(types)[0]
+      primaryType ??
+      Object.keys(types).find((k) => k !== 'EIP712Domain') ??
+      Object.keys(types)[0]
 
     const fullTypedData = {
       types: {
@@ -128,7 +138,11 @@ export async function signTypedData(
       // Fall through to trx-level methods if request rejected with
       // MethodNotFound rather than a user-rejection
       const msg = err instanceof Error ? err.message : ''
-      if (msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('denied') || msg.toLowerCase().includes('cancel')) {
+      if (
+        msg.toLowerCase().includes('reject') ||
+        msg.toLowerCase().includes('denied') ||
+        msg.toLowerCase().includes('cancel')
+      ) {
         throw err // user rejected — propagate immediately
       }
       // Method unsupported by this TronLink version → try trx methods
@@ -136,7 +150,9 @@ export async function signTypedData(
 
     // Fallback: _signTypedData — TronLink 4.x intercepts this for popup
     if (typeof tronWeb.trx._signTypedData === 'function') {
-      return extractSignature(await tronWeb.trx._signTypedData(domain, types, message))
+      return extractSignature(
+        await tronWeb.trx._signTypedData(domain, types, message),
+      )
     }
 
     throw new Error(
@@ -146,10 +162,14 @@ export async function signTypedData(
 
   // ── Non-browser / standalone: sign with private key ─────────────────────
   if (typeof tronWeb.trx.signTypedData === 'function') {
-    return extractSignature(await tronWeb.trx.signTypedData(domain, types, message))
+    return extractSignature(
+      await tronWeb.trx.signTypedData(domain, types, message),
+    )
   }
   if (typeof tronWeb.trx._signTypedData === 'function') {
-    return extractSignature(await tronWeb.trx._signTypedData(domain, types, message))
+    return extractSignature(
+      await tronWeb.trx._signTypedData(domain, types, message),
+    )
   }
 
   throw new Error('signTypedData not supported by the current TronWeb version')

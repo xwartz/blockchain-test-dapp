@@ -12,7 +12,9 @@ export const okxProvider = 'okxwallet'
 
 export class OKXWallet extends WalletProvider {
   private okxWalletInfo: WalletInfo | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private okxWallet: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private bitcoinNetwork: any
 
   constructor() {

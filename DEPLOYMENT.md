@@ -29,6 +29,7 @@ For each application, you need to create an independent project in Vercel:
 ### 3. Configure Project Settings
 
 #### Main Application
+
 - **Project Name**: `blockchain-test-dapp-main`
 - **Build Command**: `cd ../.. && pnpm build --filter=main`
 - **Output Directory**: `dist`
@@ -37,6 +38,7 @@ For each application, you need to create an independent project in Vercel:
 - **Node.js Version**: 18.x
 
 #### BIP-322 Application
+
 - **Project Name**: `blockchain-test-dapp-bip322`
 - **Build Command**: `cd ../.. && pnpm build --filter=bip322`
 - **Output Directory**: `dist`
@@ -45,6 +47,7 @@ For each application, you need to create an independent project in Vercel:
 - **Node.js Version**: 18.x
 
 #### BIP-370 Application
+
 - **Project Name**: `blockchain-test-dapp-bip370`
 - **Build Command**: `cd ../.. && pnpm build --filter=bip370`
 - **Output Directory**: `dist`
@@ -53,6 +56,7 @@ For each application, you need to create an independent project in Vercel:
 - **Node.js Version**: 18.x
 
 #### Cosmos Application
+
 - **Project Name**: `blockchain-test-dapp-cosmos`
 - **Build Command**: `cd ../.. && pnpm build --filter=cosmos`
 - **Output Directory**: `dist`
@@ -63,6 +67,7 @@ For each application, you need to create an independent project in Vercel:
 ### 4. Environment Variables Configuration
 
 #### Main Application Environment Variables
+
 Add the following environment variables in the main application's Vercel project settings:
 
 ```
@@ -70,11 +75,13 @@ VITE_BASE_URL=https://blockchain-test-dapp
 ```
 
 This way the main application will automatically generate correct links:
+
 - `https://blockchain-test-dapp-bip322.vercel.app`
 - `https://blockchain-test-dapp-bip370.vercel.app`
 - `https://blockchain-test-dapp-cosmos.vercel.app`
 
 #### Other Applications Environment Variables
+
 Other applications usually don't need additional environment variables, but you can add if needed:
 
 ```
@@ -110,11 +117,13 @@ Each application contains a `vercel.json` file to optimize deployment:
 ### Using Vercel CLI
 
 Install Vercel CLI:
+
 ```bash
 npm i -g vercel
 ```
 
 Deploy all applications:
+
 ```bash
 # Deploy main application
 cd apps/main && vercel --prod
@@ -171,11 +180,13 @@ If you have a custom domain, you can configure subdomains for each application:
 - `cosmos.yourdomain.com` → Cosmos application
 
 Remember to update `VITE_BASE_URL` in the main application's environment variables:
+
 ```
 VITE_BASE_URL=https://yourdomain.com
 ```
 
 Then the application links will become:
+
 - `https://bip322.yourdomain.com`
 - `https://bip370.yourdomain.com`
 - `https://cosmos.yourdomain.com`

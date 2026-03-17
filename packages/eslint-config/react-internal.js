@@ -17,7 +17,6 @@ module.exports = {
   extends: ['eslint:recommended', 'prettier', 'eslint-config-turbo'],
   plugins: ['only-warn'],
   globals: {
-    React: true,
     JSX: true,
   },
   env: {
@@ -35,7 +34,12 @@ module.exports = {
     '.*.js',
     'node_modules/',
     'dist/',
+    'postcss.config.js',
+    'tailwind.config.js',
   ],
+  rules: {
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+  },
   overrides: [
     // Force ESLint to detect .tsx files
     { files: ['*.js?(x)', '*.ts?(x)'] },

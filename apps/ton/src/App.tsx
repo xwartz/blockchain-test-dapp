@@ -2,7 +2,6 @@ import { useCallback, useState, useEffect, useRef } from 'react'
 import { Provider } from 'jotai'
 import {
   ThemeProvider,
-  ModeToggle,
   Label,
   Button,
   useToast,
@@ -35,27 +34,24 @@ function Header() {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950/20 dark:via-background dark:to-blue-950/20" />
 
       <div className="relative px-6 py-8">
-        <div className="flex justify-between items-start max-w-4xl mx-auto">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white text-xl font-bold">T</span>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                  TON Wallet
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  The Open Network Wallet
-                </p>
-              </div>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white text-xl font-bold">T</span>
             </div>
-            <p className="text-sm text-muted-foreground max-w-md">
-              A secure and user-friendly wallet for the TON blockchain with full
-              TON Connect support
-            </p>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                TON Wallet
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                The Open Network Wallet
+              </p>
+            </div>
           </div>
-          <ModeToggle />
+          <p className="text-sm text-muted-foreground max-w-md">
+            A secure and user-friendly wallet for the TON blockchain with full
+            TON Connect support
+          </p>
         </div>
       </div>
     </div>

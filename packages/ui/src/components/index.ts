@@ -14,7 +14,6 @@ export * from './ui/switch'
 
 // Shared theme components
 export * from './theme-provider'
-export * from './mode-toggle'
 
 // Export commonly used lucide-react icons
 export {

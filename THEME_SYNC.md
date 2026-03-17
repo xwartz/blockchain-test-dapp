@@ -21,6 +21,7 @@ We implemented a cross-app theme synchronization mechanism with the following fe
 ### 2. Theme Synchronization Mechanisms
 
 #### URL Parameter Passing
+
 ```typescript
 // Main app carries current theme when navigating
 const getAppUrl = (appName: string, port?: number, theme?: string) => {
@@ -37,6 +38,7 @@ const getAppUrl = (appName: string, port?: number, theme?: string) => {
 ```
 
 #### Cross-Window Listening
+
 ```typescript
 // Listen for theme changes from other windows
 useEffect(() => {
@@ -55,6 +57,7 @@ useEffect(() => {
 ```
 
 #### Theme Broadcasting
+
 ```typescript
 const setTheme = (newTheme: Theme) => {
   localStorage.setItem(storageKey, newTheme)
@@ -66,7 +69,7 @@ const setTheme = (newTheme: Theme) => {
       key: storageKey,
       newValue: newTheme,
       oldValue: theme,
-    })
+    }),
   )
 }
 ```
@@ -80,6 +83,7 @@ const setTheme = (newTheme: Theme) => {
 ### 4. Usage
 
 #### Using in Applications
+
 ```typescript
 import { ThemeProvider, ModeToggle } from '@ui/components'
 
@@ -96,6 +100,7 @@ function App() {
 ```
 
 #### Theme Toggle Component
+
 ```typescript
 import { useTheme } from '@ui/components'
 
@@ -113,16 +118,19 @@ function CustomThemeToggle() {
 ## Technical Implementation
 
 ### 1. Shared Component Architecture
+
 - All theme-related components moved to `@repo/ui` package
 - Removed local theme components from individual applications
 - Unified export and usage
 
 ### 2. Event-Driven Synchronization
+
 - Use `StorageEvent` for cross-window communication
 - Manually trigger `storage` events for same-window broadcasting
 - Monitor system theme changes
 
 ### 3. State Management
+
 - React Context manages application-level theme state
 - localStorage for persistent storage
 - URL parameters for temporary passing
@@ -130,6 +138,7 @@ function CustomThemeToggle() {
 ## Testing and Verification
 
 ### Development Environment Testing
+
 1. Start main app: `pnpm dev:main` (port 3000)
 2. Start other apps: `pnpm dev:bip322` (port 3001)
 3. Switch theme in main app
@@ -137,6 +146,7 @@ function CustomThemeToggle() {
 5. Switch theme in new window, verify real-time synchronization
 
 ### Production Environment
+
 - Theme parameters passed through URLs to independently deployed applications
 - Applications under same domain can synchronize themes in real-time
 
@@ -162,6 +172,7 @@ function CustomThemeToggle() {
 The enhanced theme provider includes several key features:
 
 #### URL Parameter Detection
+
 ```typescript
 const getThemeFromUrl = (): Theme | null => {
   if (typeof window === 'undefined') return null
@@ -178,6 +189,7 @@ const getThemeFromUrl = (): Theme | null => {
 ```
 
 #### System Theme Monitoring
+
 ```typescript
 useEffect(() => {
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -194,6 +206,7 @@ useEffect(() => {
 ```
 
 #### Cross-Window Storage Events
+
 ```typescript
 useEffect(() => {
   const handleStorageChange = (e: StorageEvent) => {
@@ -223,7 +236,7 @@ const broadcastThemeChange = (newTheme: Theme, oldTheme: Theme) => {
       oldValue: oldTheme,
       url: window.location.href,
       storageArea: localStorage,
-    })
+    }),
   )
 }
 ```
@@ -252,6 +265,7 @@ const initializeTheme = (): Theme => {
 If you're upgrading from local theme components to the shared system:
 
 ### 1. Remove Local Components
+
 ```bash
 # Remove these files from each app
 rm apps/*/src/components/theme-provider.tsx
@@ -259,6 +273,7 @@ rm apps/*/src/components/mode-toggle.tsx
 ```
 
 ### 2. Update Imports
+
 ```typescript
 // Before
 import { ThemeProvider } from './components/theme-provider'
@@ -269,6 +284,7 @@ import { ThemeProvider, ModeToggle } from '@ui/components'
 ```
 
 ### 3. Add URL Theme Support
+
 Update your main app's link generation to include theme parameters:
 
 ```typescript
@@ -278,6 +294,7 @@ const targetUrl = getAppUrl('bip322', 3001, currentTheme)
 ```
 
 ### 4. Test Cross-App Synchronization
+
 1. Verify theme persistence across app switches
 2. Test real-time synchronization in multiple windows
 3. Confirm system theme detection works correctly

@@ -1,6 +1,10 @@
 import { Button, Wallet } from '@ui/components'
 import { useWalletState, useWalletActions } from '@/store/hooks'
-import { connectWallet, isTronWalletAvailable, getCurrentAddress } from '@/utils/tronlink'
+import {
+  connectWallet,
+  isTronWalletAvailable,
+  getCurrentAddress,
+} from '@/utils/tronlink'
 import { useToast } from '@ui/components'
 import { useEffect } from 'react'
 
@@ -37,7 +41,10 @@ export function WalletConnect() {
       setAddress(addr)
       setAddressHex(addressHex)
       setIsConnected(true)
-      toast({ title: 'Connected', description: `${addr.slice(0, 8)}...${addr.slice(-6)}` })
+      toast({
+        title: 'Connected',
+        description: `${addr.slice(0, 8)}...${addr.slice(-6)}`,
+      })
     } catch (err) {
       toast({
         title: 'Connection Failed',
