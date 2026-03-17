@@ -87,7 +87,10 @@ export function PayloadEditor() {
       const result = computeSigningHash(payload)
       setHashResult(result)
       setSignatureError('')
-      toast({ title: 'Hash Computed', description: 'Signing hash calculated successfully.' })
+      toast({
+        title: 'Hash Computed',
+        description: 'Signing hash calculated successfully.',
+      })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Hash computation failed'
       setSignatureError(msg)
@@ -130,7 +133,10 @@ export function PayloadEditor() {
 
       const { r, s, v } = splitSignature(sig)
       setSignatureResult({ signature: sig, r, s, v })
-      toast({ title: 'Signed', description: 'Signature obtained successfully.' })
+      toast({
+        title: 'Signed',
+        description: 'Signature obtained successfully.',
+      })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Signing failed'
       setSignatureError(msg)
@@ -176,7 +182,12 @@ export function PayloadEditor() {
                 ))}
               </SelectContent>
             </Select>
-            <Button variant="ghost" size="sm" onClick={handleFormatJson} className="text-xs h-8">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleFormatJson}
+              className="text-xs h-8"
+            >
               Format
             </Button>
           </div>

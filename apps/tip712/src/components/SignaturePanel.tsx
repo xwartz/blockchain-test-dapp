@@ -9,7 +9,11 @@ import {
   Label,
   useToast,
 } from '@ui/components'
-import { useSignatureResult, useSignatureError, useHashResult } from '@/store/hooks'
+import {
+  useSignatureResult,
+  useSignatureError,
+  useHashResult,
+} from '@/store/hooks'
 import { splitSignature } from '@/utils/tip712'
 
 export function SignaturePanel() {
@@ -57,7 +61,9 @@ export function SignaturePanel() {
           <CardContent className="space-y-3">
             {sigError && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-                <p className="text-xs text-destructive font-mono break-all">{sigError}</p>
+                <p className="text-xs text-destructive font-mono break-all">
+                  {sigError}
+                </p>
               </div>
             )}
             {sigResult && (
@@ -71,7 +77,9 @@ export function SignaturePanel() {
                       variant="ghost"
                       size="sm"
                       className="h-6 text-xs"
-                      onClick={() => handleCopy(sigResult.signature, 'Signature')}
+                      onClick={() =>
+                        handleCopy(sigResult.signature, 'Signature')
+                      }
                     >
                       Copy
                     </Button>

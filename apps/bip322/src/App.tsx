@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useMemo } from 'react'
-import { ThemeProvider, ModeToggle } from '@ui/components'
+import { ThemeProvider } from '@ui/components'
 import {
   genPsbtOfBIP322Simple,
   verifyMessageOfBIP322Simple,
@@ -67,10 +67,7 @@ function reducer(state: State, action: Action): State {
 
 function Header() {
   return (
-    <div className="text-center m-6 relative">
-      <div className="absolute top-0 right-0">
-        <ModeToggle />
-      </div>
+    <div className="text-center px-4 py-6">
       <h2 className="border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         BIP-322
       </h2>
@@ -93,19 +90,25 @@ function Header() {
 
 function WalletInfo({ network, address, balance }: Partial<State>) {
   return (
-    <div className="m-5">
+    <div className="my-5 space-y-3">
       <h3 className="text-xl font-semibold">Wallet Info</h3>
-      <div className="mt-2">
-        <p>Network: </p>
-        <code className="rounded bg-muted text-sm break-all">{network}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Network</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {network}
+        </code>
       </div>
-      <div className="mt-2">
-        <p>Address: </p>
-        <code className="rounded bg-muted text-sm break-all">{address}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Address</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {address}
+        </code>
       </div>
-      <div className="mt-2">
-        <p>Balance: </p>
-        <code className="rounded bg-muted text-sm break-all">{balance}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Balance</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {balance}
+        </code>
       </div>
     </div>
   )
@@ -127,9 +130,9 @@ function SignMessage({
   setMsg,
 }: SignMessageProps) {
   return (
-    <div className="m-5 text-center">
-      <h3 className="text-xl font-semibold">Sign Message</h3>
-      <div className="mt-2 grid w-full gap-2 grid w-full max-w-sm mx-auto">
+    <div className="my-5 space-y-4 text-left">
+      <h3 className="text-xl font-semibold text-center">Sign Message</h3>
+      <div className="grid w-full gap-2 max-w-sm mx-auto">
         <Label htmlFor="message">Message: </Label>
         <Textarea
           placeholder="Type your message here."
@@ -139,22 +142,28 @@ function SignMessage({
         />
         <Button onClick={onSignMsg}>Sign</Button>
       </div>
-      <div className="mt-2">
-        <p>Psbt: </p>
-        <code className="rounded bg-muted text-sm break-all">{psbt}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Psbt</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {psbt}
+        </code>
       </div>
-      <div className="mt-2">
-        <p>Signature: </p>
-        <code className="rounded bg-muted text-sm break-all">{signature}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Signature</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {signature}
+        </code>
       </div>
-      <div className="mt-2 grid w-full gap-2 grid w-full max-w-sm mx-auto">
+      <div className="grid w-full gap-2 max-w-sm mx-auto">
         <Button variant="outline" onClick={onVerify}>
           Verify
         </Button>
       </div>
-      <div className="mt-2">
-        <p>Recovery result: </p>
-        <code className="rounded bg-muted text-sm break-all">{recovery}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Recovery result</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {recovery}
+        </code>
       </div>
     </div>
   )
@@ -253,7 +262,7 @@ function AppContent() {
     <div>
       <Header />
       <Separator />
-      <div className="p-5 text-center" style={{ maxWidth: '100%' }}>
+      <div className="max-w-xl mx-auto w-full px-4 py-5 text-center">
         {connectButton}
         <WalletInfo
           network={state.network}

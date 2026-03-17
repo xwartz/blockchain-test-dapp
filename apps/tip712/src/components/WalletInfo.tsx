@@ -23,7 +23,9 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <p className="text-sm font-mono break-all mt-0.5 text-foreground">{value}</p>
+      <p className="text-sm font-mono break-all mt-0.5 text-foreground">
+        {value}
+      </p>
     </div>
   )
 }

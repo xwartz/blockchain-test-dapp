@@ -49,8 +49,8 @@ TIP-712 在 EIP-712 基础上做了三处 TRON 专属适配，**其余编码规�
 
 ### 2.1 ChainId 裁剪（最重要！）
 
-| 特性 | EIP-712 | TIP-712 |
-|------|---------|---------|
+| 特性         | EIP-712                         | TIP-712                                     |
+| ------------ | ------------------------------- | ------------------------------------------- |
 | ChainId 计算 | `block.chainid`（完整 256-bit） | `block.chainid & 0xffffffff`（取低 32-bit） |
 
 TRON 主网的完整 `block.chainid` 是一个 64 位整数，TIP-712 **只取最低 4 字节**：
@@ -72,8 +72,8 @@ assembly {
 
 ### 2.2 Address 类型编码
 
-| 特性 | EIP-712 | TIP-712 |
-|------|---------|---------|
+| 特性     | EIP-712                         | TIP-712                                              |
+| -------- | ------------------------------- | ---------------------------------------------------- |
 | 地址格式 | 20-byte hex，直接编码为 uint160 | Base58Check 格式，**去除 0x41 前缀**后编码为 uint160 |
 
 TRON 地址以 Base58Check 表示（如 `TXYZabc...`），内部是 21 字节（`0x41` + 20 字节 payload）。TIP-712 编码时：
@@ -95,24 +95,24 @@ TronWeb 的 `signTypedData` 会自动处理这一转换；手动计算哈希时�
 
 TRON 独有 `trcToken` 类型用于 TRC-10 代币 ID：
 
-| 特性 | EIP-712 | TIP-712 |
-|------|---------|---------|
-| trcToken | 不存在 | 视为原子类型，编码方式与 uint256 完全相同 |
+| 特性     | EIP-712 | TIP-712                                   |
+| -------- | ------- | ----------------------------------------- |
+| trcToken | 不存在  | 视为原子类型，编码方式与 uint256 完全相同 |
 
 在 typeString 中直接写 `trcToken`，无需特殊处理，编码时等同于 `uint256`。
 
 ### 2.4 差异总结表
 
-| 差异点 | EIP-712（Ethereum） | TIP-712（TRON） |
-|--------|-------------------|----------------|
-| chainId | `block.chainid` | `block.chainid & 0xffffffff` |
-| address 编码 | 20-byte hex → uint160 | Base58 解码 → 去 0x41 前缀 → uint160 |
-| 新原子类型 | 无 | `trcToken`（编码为 uint256） |
-| 签名前缀 | `\x19\x01` | `\x19\x01`（**完全相同**） |
-| 哈希算法 | keccak256 | keccak256（**完全相同**） |
-| 结构编码规则 | EIP-712 规范 | **完全兼容 EIP-712**（除上述三点） |
-| 钱包签名 API | `eth_signTypedData_v4` | `tronWeb.trx.signTypedData()` |
-| s 值规范化 | EIP-2 要求 s ≤ n/2 | **无强制要求**，不需要规范化 s |
+| 差异点       | EIP-712（Ethereum）    | TIP-712（TRON）                      |
+| ------------ | ---------------------- | ------------------------------------ |
+| chainId      | `block.chainid`        | `block.chainid & 0xffffffff`         |
+| address 编码 | 20-byte hex → uint160  | Base58 解码 → 去 0x41 前缀 → uint160 |
+| 新原子类型   | 无                     | `trcToken`（编码为 uint256）         |
+| 签名前缀     | `\x19\x01`             | `\x19\x01`（**完全相同**）           |
+| 哈希算法     | keccak256              | keccak256（**完全相同**）            |
+| 结构编码规则 | EIP-712 规范           | **完全兼容 EIP-712**（除上述三点）   |
+| 钱包签名 API | `eth_signTypedData_v4` | `tronWeb.trx.signTypedData()`        |
+| s 值规范化   | EIP-2 要求 s ≤ n/2     | **无强制要求**，不需要规范化 s       |
 
 ---
 
@@ -151,19 +151,19 @@ encodeType(Mail) =
 
 每个字段编码为恰好 **32 字节**：
 
-| 类型 | 编码方式 |
-|------|---------|
-| `bool` | uint256（false=0, true=1） |
-| `address` | uint160，**TRON 需去掉 0x41 前缀**，左填零 |
-| `uint8`～`uint256` | 大端序，左填零到 32 字节 |
-| `int8`～`int256` | 符号扩展到 256 位，大端序 |
-| `bytes1`～`bytes31` | 右侧填零到 32 字节 |
-| `bytes32` | 直接使用 |
-| `bytes`（动态） | `keccak256(bytes 内容)` |
-| `string` | `keccak256(utf8Bytes(string))` |
-| `T[]` / `T[n]` | `keccak256(每个元素的 encodeData 拼接)` |
-| struct | `hashStruct(struct 实例)`（递归） |
-| `trcToken`（TRON） | 与 uint256 相同 |
+| 类型                | 编码方式                                   |
+| ------------------- | ------------------------------------------ |
+| `bool`              | uint256（false=0, true=1）                 |
+| `address`           | uint160，**TRON 需去掉 0x41 前缀**，左填零 |
+| `uint8`～`uint256`  | 大端序，左填零到 32 字节                   |
+| `int8`～`int256`    | 符号扩展到 256 位，大端序                  |
+| `bytes1`～`bytes31` | 右侧填零到 32 字节                         |
+| `bytes32`           | 直接使用                                   |
+| `bytes`（动态）     | `keccak256(bytes 内容)`                    |
+| `string`            | `keccak256(utf8Bytes(string))`             |
+| `T[]` / `T[n]`      | `keccak256(每个元素的 encodeData 拼接)`    |
+| struct              | `hashStruct(struct 实例)`（递归）          |
+| `trcToken`（TRON）  | 与 uint256 相同                            |
 
 ---
 
@@ -200,11 +200,11 @@ bytes32 domainSeparator = keccak256(abi.encode(
 
 ### 4.3 各网络参数速查
 
-| 网络 | chainId（裁剪后十六进制） | 十进制 |
-|------|------------------------|-------|
-| TRON 主网 | `0x2b6653dc` | 728127452 |
-| Nile 测试网 | `0xcd8690dc` | 3448148188 |
-| Shasta 测试网 | `0x94a9059e` | 2494104990 |
+| 网络          | chainId（裁剪后十六进制） | 十进制     |
+| ------------- | ------------------------- | ---------- |
+| TRON 主网     | `0x2b6653dc`              | 728127452  |
+| Nile 测试网   | `0xcd8690dc`              | 3448148188 |
+| Shasta 测试网 | `0x94a9059e`              | 2494104990 |
 
 ---
 
@@ -251,16 +251,16 @@ GasFree PermitTransfer（GasFreeController 合约）
 
 ### 5.2 本质区别
 
-| 维度 | Permit | Permit2 PermitTransferFrom | GasFree PermitTransfer |
-|------|--------|--------------------------|----------------------|
-| **协议来源** | Ethereum ERC-2612（TRON 无正式 TIP） | Uniswap Permit2（已移植 TRON） | GasFree.io 私有协议 |
-| **执行合约** | 代币合约自身 | Permit2 合约 | GasFreeController 合约 |
-| **主要动作** | 设置 allowance | 验签 + 执行转账 | 验签 + 中继转账 + 代付 Gas |
-| **Spender** | ✅ 有（被授权方） | ✅ 有（调用方合约） | ❌ 无，改为 serviceProvider |
-| **Receiver** | ❌ 无 | ❌ 无（在 TransferDetails 里） | ✅ 直接包含 |
-| **手续费字段** | ❌ 无 | ❌ 无 | ✅ maxFee |
-| **Nonce 机制** | 单调递增 | 无序 bitmap | 单调递增（服务端管理） |
-| **TRON 成熟度** | ⚠️ 无标准，无主流代币支持 | ✅ 已有主网合约 | ✅ 生产运行中 |
+| 维度            | Permit                               | Permit2 PermitTransferFrom     | GasFree PermitTransfer      |
+| --------------- | ------------------------------------ | ------------------------------ | --------------------------- |
+| **协议来源**    | Ethereum ERC-2612（TRON 无正式 TIP） | Uniswap Permit2（已移植 TRON） | GasFree.io 私有协议         |
+| **执行合约**    | 代币合约自身                         | Permit2 合约                   | GasFreeController 合约      |
+| **主要动作**    | 设置 allowance                       | 验签 + 执行转账                | 验签 + 中继转账 + 代付 Gas  |
+| **Spender**     | ✅ 有（被授权方）                    | ✅ 有（调用方合约）            | ❌ 无，改为 serviceProvider |
+| **Receiver**    | ❌ 无                                | ❌ 无（在 TransferDetails 里） | ✅ 直接包含                 |
+| **手续费字段**  | ❌ 无                                | ❌ 无                          | ✅ maxFee                   |
+| **Nonce 机制**  | 单调递增                             | 无序 bitmap                    | 单调递增（服务端管理）      |
+| **TRON 成熟度** | ⚠️ 无标准，无主流代币支持            | ✅ 已有主网合约                | ✅ 生产运行中               |
 
 ### 5.3 TRON 社区对 Permit（ERC-2612）的现状
 
@@ -310,19 +310,19 @@ uint256 chainId = block.chainid & 0xffffffff;  // ← 仅此一处不同于 ETH 
   },
   "types": {
     "Person": [
-      { "name": "name",   "type": "string"  },
+      { "name": "name", "type": "string" },
       { "name": "wallet", "type": "address" }
     ],
     "Mail": [
-      { "name": "from",     "type": "Person" },
-      { "name": "to",       "type": "Person" },
+      { "name": "from", "type": "Person" },
+      { "name": "to", "type": "Person" },
       { "name": "contents", "type": "string" }
     ]
   },
   "primaryType": "Mail",
   "message": {
-    "from":     { "name": "Cow", "wallet": "TUg28KYvCXWW81EqMUeZvCZmZw2BChk1HQ" },
-    "to":       { "name": "Bob", "wallet": "TT5rFsXYCrnzdE2q1WdR9F2SuVY59A4hoM" },
+    "from": { "name": "Cow", "wallet": "TUg28KYvCXWW81EqMUeZvCZmZw2BChk1HQ" },
+    "to": { "name": "Bob", "wallet": "TT5rFsXYCrnzdE2q1WdR9F2SuVY59A4hoM" },
     "contents": "Hello, Bob!"
   }
 }
@@ -341,10 +341,10 @@ typeHash   = keccak256(encodeType)
 {
   "types": {
     "AssetTransfer": [
-      { "name": "from",   "type": "address"  },
-      { "name": "to",     "type": "address"  },
-      { "name": "id",     "type": "trcToken" },
-      { "name": "amount", "type": "uint256"  }
+      { "name": "from", "type": "address" },
+      { "name": "to", "type": "address" },
+      { "name": "id", "type": "trcToken" },
+      { "name": "amount", "type": "uint256" }
     ]
   }
 }
@@ -374,19 +374,19 @@ Permit 允许用户通过链下签名代替链上 `approve()`，DApp 在调用 `
   },
   "types": {
     "Permit": [
-      { "name": "owner",    "type": "address" },
-      { "name": "spender",  "type": "address" },
-      { "name": "value",    "type": "uint256" },
-      { "name": "nonce",    "type": "uint256" },
+      { "name": "owner", "type": "address" },
+      { "name": "spender", "type": "address" },
+      { "name": "value", "type": "uint256" },
+      { "name": "nonce", "type": "uint256" },
       { "name": "deadline", "type": "uint256" }
     ]
   },
   "primaryType": "Permit",
   "message": {
-    "owner":    "<token_owner_address>",
-    "spender":  "<spender_address>",
-    "value":    "1000000000",
-    "nonce":    "0",
+    "owner": "<token_owner_address>",
+    "spender": "<spender_address>",
+    "value": "1000000000",
+    "nonce": "0",
     "deadline": "1735689600"
   }
 }
@@ -445,34 +445,34 @@ abstract contract TRC20Permit {
 
 ```javascript
 const domain = {
-  name: "MyToken",
-  version: "1",
-  chainId: "0x2b6653dc",
+  name: 'MyToken',
+  version: '1',
+  chainId: '0x2b6653dc',
   verifyingContract: tokenAddress,
-};
+}
 
 const types = {
   Permit: [
-    { name: "owner",    type: "address" },
-    { name: "spender",  type: "address" },
-    { name: "value",    type: "uint256" },
-    { name: "nonce",    type: "uint256" },
-    { name: "deadline", type: "uint256" },
+    { name: 'owner', type: 'address' },
+    { name: 'spender', type: 'address' },
+    { name: 'value', type: 'uint256' },
+    { name: 'nonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
   ],
-};
+}
 
 const message = {
-  owner:    userAddress,
-  spender:  spenderAddress,
-  value:    "1000000000",
-  nonce:    (await tokenContract.nonces(userAddress).call()).toString(),
+  owner: userAddress,
+  spender: spenderAddress,
+  value: '1000000000',
+  nonce: (await tokenContract.nonces(userAddress).call()).toString(),
   deadline: Math.floor(Date.now() / 1000 + 3600).toString(),
-};
+}
 
 // TronWeb 5.x+
-const signature = await tronWeb.trx.signTypedData(domain, types, message);
+const signature = await tronWeb.trx.signTypedData(domain, types, message)
 // TronWeb 4.x（旧 API）
-const signature = await tronWeb.trx._signTypedData(domain, types, message);
+const signature = await tronWeb.trx._signTypedData(domain, types, message)
 ```
 
 ---
@@ -497,23 +497,23 @@ Permit2 是 Uniswap 的通用授权/元交易基础设施，已移植到 TRON（
   "types": {
     "PermitTransferFrom": [
       { "name": "permitted", "type": "TokenPermissions" },
-      { "name": "spender",   "type": "address"          },
-      { "name": "nonce",     "type": "uint256"          },
-      { "name": "deadline",  "type": "uint256"          }
+      { "name": "spender", "type": "address" },
+      { "name": "nonce", "type": "uint256" },
+      { "name": "deadline", "type": "uint256" }
     ],
     "TokenPermissions": [
-      { "name": "token",  "type": "address" },
+      { "name": "token", "type": "address" },
       { "name": "amount", "type": "uint256" }
     ]
   },
   "primaryType": "PermitTransferFrom",
   "message": {
     "permitted": {
-      "token":  "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      "token": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
       "amount": "1000000"
     },
-    "spender":  "<dapp_contract_address>",
-    "nonce":    "12345678901234567890",
+    "spender": "<dapp_contract_address>",
+    "nonce": "12345678901234567890",
     "deadline": "1735689600"
   }
 }
@@ -550,47 +550,49 @@ nonce 可乱序使用，但同一个 bit 只能使用一次，防止重放。
 ### 8.5 前端签名
 
 ```javascript
-const permit2Address = "TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m";
+const permit2Address = 'TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m'
 
 const domain = {
-  name: "Permit2",
-  chainId: Number("0x2b6653dc"),
+  name: 'Permit2',
+  chainId: Number('0x2b6653dc'),
   verifyingContract: permit2Address,
   // 注意：没有 version 字段
-};
+}
 
 const types = {
   PermitTransferFrom: [
-    { name: "permitted", type: "TokenPermissions" },
-    { name: "spender",   type: "address"          },
-    { name: "nonce",     type: "uint256"          },
-    { name: "deadline",  type: "uint256"          },
+    { name: 'permitted', type: 'TokenPermissions' },
+    { name: 'spender', type: 'address' },
+    { name: 'nonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
   ],
   TokenPermissions: [
-    { name: "token",  type: "address" },
-    { name: "amount", type: "uint256" },
+    { name: 'token', type: 'address' },
+    { name: 'amount', type: 'uint256' },
   ],
-};
+}
 
 const message = {
   permitted: {
-    token:  "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-    amount: "1000000",
+    token: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+    amount: '1000000',
   },
-  spender:  dappContractAddress,
-  nonce:    generateNonce(),
+  spender: dappContractAddress,
+  nonce: generateNonce(),
   deadline: Math.floor(Date.now() / 1000 + 1800).toString(),
-};
+}
 
-const signature = await tronWeb.trx.signTypedData(domain, types, message);
+const signature = await tronWeb.trx.signTypedData(domain, types, message)
 
 // DApp 随后调用合约
-await permit2Contract.permitTransferFrom(
-  permit,          // { permitted: { token, amount }, nonce, deadline }
-  transferDetails, // { to: recipient, requestedAmount: amount }
-  ownerAddress,
-  signature
-).send();
+await permit2Contract
+  .permitTransferFrom(
+    permit, // { permitted: { token, amount }, nonce, deadline }
+    transferDetails, // { to: recipient, requestedAmount: amount }
+    ownerAddress,
+    signature,
+  )
+  .send()
 ```
 
 ### 8.6 带 Witness 的扩展签名
@@ -600,21 +602,21 @@ Permit2 支持在签名中附加任意应用数据（witness），用于协议�
 ```javascript
 const types = {
   PermitWitnessTransferFrom: [
-    { name: "permitted", type: "TokenPermissions" },
-    { name: "spender",   type: "address"          },
-    { name: "nonce",     type: "uint256"          },
-    { name: "deadline",  type: "uint256"          },
-    { name: "witness",   type: "ExampleTrade"     }, // ← 附加数据
+    { name: 'permitted', type: 'TokenPermissions' },
+    { name: 'spender', type: 'address' },
+    { name: 'nonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
+    { name: 'witness', type: 'ExampleTrade' }, // ← 附加数据
   ],
   TokenPermissions: [
-    { name: "token",  type: "address" },
-    { name: "amount", type: "uint256" },
+    { name: 'token', type: 'address' },
+    { name: 'amount', type: 'uint256' },
   ],
   ExampleTrade: [
-    { name: "exampleTokenAddress",     type: "address" },
-    { name: "exampleMinimumAmountOut", type: "uint256" },
+    { name: 'exampleTokenAddress', type: 'address' },
+    { name: 'exampleMinimumAmountOut', type: 'uint256' },
   ],
-};
+}
 ```
 
 ### 8.7 AllowanceTransfer（持久授权，含过期时间）
@@ -623,15 +625,15 @@ const types = {
 {
   "types": {
     "PermitSingle": [
-      { "name": "details",     "type": "PermitDetails" },
-      { "name": "spender",     "type": "address"       },
-      { "name": "sigDeadline", "type": "uint256"       }
+      { "name": "details", "type": "PermitDetails" },
+      { "name": "spender", "type": "address" },
+      { "name": "sigDeadline", "type": "uint256" }
     ],
     "PermitDetails": [
-      { "name": "token",      "type": "address" },
-      { "name": "amount",     "type": "uint160" },
-      { "name": "expiration", "type": "uint48"  },
-      { "name": "nonce",      "type": "uint48"  }
+      { "name": "token", "type": "address" },
+      { "name": "amount", "type": "uint160" },
+      { "name": "expiration", "type": "uint48" },
+      { "name": "nonce", "type": "uint48" }
     ]
   },
   "primaryType": "PermitSingle"
@@ -661,9 +663,9 @@ GasFree 是 TRON 上的无 Gas TRC-20 转账协议。用户签名授权，由服
 
 ### 9.2 GasFree Domain 配置
 
-| 网络 | chainId | verifyingContract |
-|------|---------|-------------------|
-| 主网 | `0x2b6653dc` | `TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U` |
+| 网络        | chainId      | verifyingContract                    |
+| ----------- | ------------ | ------------------------------------ |
+| 主网        | `0x2b6653dc` | `TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U` |
 | Nile 测试网 | `0xcd8690dc` | `THQGuFzL87ZqhxkgqYEryRAd7gqFqL5rdc` |
 
 ```json
@@ -687,57 +689,57 @@ GasFree 是 TRON 上的无 Gas TRC-20 转账协议。用户签名授权，由服
   },
   "types": {
     "PermitTransfer": [
-      { "name": "token",           "type": "address" },
+      { "name": "token", "type": "address" },
       { "name": "serviceProvider", "type": "address" },
-      { "name": "user",            "type": "address" },
-      { "name": "receiver",        "type": "address" },
-      { "name": "value",           "type": "uint256" },
-      { "name": "maxFee",          "type": "uint256" },
-      { "name": "deadline",        "type": "uint256" },
-      { "name": "version",         "type": "uint256" },
-      { "name": "nonce",           "type": "uint256" }
+      { "name": "user", "type": "address" },
+      { "name": "receiver", "type": "address" },
+      { "name": "value", "type": "uint256" },
+      { "name": "maxFee", "type": "uint256" },
+      { "name": "deadline", "type": "uint256" },
+      { "name": "version", "type": "uint256" },
+      { "name": "nonce", "type": "uint256" }
     ]
   },
   "primaryType": "PermitTransfer",
   "message": {
-    "token":           "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+    "token": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
     "serviceProvider": "TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp",
-    "user":            "<user_eoa_address>",
-    "receiver":        "<receiver_address>",
-    "value":           "90000000",
-    "maxFee":          "2000000",
-    "deadline":        "1735689600",
-    "version":         "1",
-    "nonce":           "0"
+    "user": "<user_eoa_address>",
+    "receiver": "<receiver_address>",
+    "value": "90000000",
+    "maxFee": "2000000",
+    "deadline": "1735689600",
+    "version": "1",
+    "nonce": "0"
   }
 }
 ```
 
 ### 9.4 字段说明
 
-| 字段 | 说明 |
-|------|------|
-| `token` | TRC-20 合约地址（如 USDT） |
-| `serviceProvider` | GasFree 服务商地址（从 API 获取） |
-| `user` | 用户**真实 EOA 地址**，不是 GasFree 合约地址！ |
-| `receiver` | 最终收款地址 |
-| `value` | 转账金额（最小单位，USDT 为 6 位小数） |
-| `maxFee` | 最大可接受手续费（含转账费 + 账号激活费） |
-| `deadline` | 签名过期时间戳（秒级 Unix 时间） |
-| `version` | 签名算法版本，当前固定为 `1` |
-| `nonce` | 防重放 nonce，从 GasFree API 获取最新值 |
+| 字段              | 说明                                           |
+| ----------------- | ---------------------------------------------- |
+| `token`           | TRC-20 合约地址（如 USDT）                     |
+| `serviceProvider` | GasFree 服务商地址（从 API 获取）              |
+| `user`            | 用户**真实 EOA 地址**，不是 GasFree 合约地址！ |
+| `receiver`        | 最终收款地址                                   |
+| `value`           | 转账金额（最小单位，USDT 为 6 位小数）         |
+| `maxFee`          | 最大可接受手续费（含转账费 + 账号激活费）      |
+| `deadline`        | 签名过期时间戳（秒级 Unix 时间）               |
+| `version`         | 签名算法版本，当前固定为 `1`                   |
+| `nonce`           | 防重放 nonce，从 GasFree API 获取最新值        |
 
 ### 9.5 GasFree 地址派生
 
 GasFree 为每个用户创建一个专属 CREATE2 智能合约地址（用于持有代币，由服务商管理转出权限）：
 
 ```javascript
-import { TronGasFree } from "@gasfree/gasfree-sdk";
+import { TronGasFree } from '@gasfree/gasfree-sdk'
 
-const tronGasFree = new TronGasFree({ chainId: Number("0x2b6653dc") });
+const tronGasFree = new TronGasFree({ chainId: Number('0x2b6653dc') })
 
 // user 持有 TRX EOA 地址，gasFreeAddress 是对应的托管合约地址
-const gasFreeAddress = tronGasFree.generateGasFreeAddress(userEOAAddress);
+const gasFreeAddress = tronGasFree.generateGasFreeAddress(userEOAAddress)
 ```
 
 `user` 字段填 EOA 地址，`receiver` 可以是任意地址（包括另一个 GasFree 合约地址）。
@@ -745,24 +747,24 @@ const gasFreeAddress = tronGasFree.generateGasFreeAddress(userEOAAddress);
 ### 9.6 前端签名
 
 ```javascript
-import { TronGasFree } from "@gasfree/gasfree-sdk";
+import { TronGasFree } from '@gasfree/gasfree-sdk'
 
-const tronGasFree = new TronGasFree({ chainId: Number("0x2b6653dc") });
+const tronGasFree = new TronGasFree({ chainId: Number('0x2b6653dc') })
 
 // SDK 自动组装标准 TIP-712 结构
 const { domain, types, message } = tronGasFree.assembleGasFreeTransactionJson({
-  token:           "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-  serviceProvider: "TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp",
-  user:            userAddress,   // ← EOA 地址
-  receiver:        receiverAddress,
-  value:           "90000000",
-  maxFee:          "2000000",
-  deadline:        Math.floor(Date.now() / 1000 + 3600).toString(),
-  version:         "1",
-  nonce:           await fetchLatestNonce(userAddress), // 从 API 获取
-});
+  token: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+  serviceProvider: 'TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp',
+  user: userAddress, // ← EOA 地址
+  receiver: receiverAddress,
+  value: '90000000',
+  maxFee: '2000000',
+  deadline: Math.floor(Date.now() / 1000 + 3600).toString(),
+  version: '1',
+  nonce: await fetchLatestNonce(userAddress), // 从 API 获取
+})
 
-const signature = await tronWeb.trx._signTypedData(domain, types, message);
+const signature = await tronWeb.trx._signTypedData(domain, types, message)
 ```
 
 ### 9.7 Ledger 硬件钱包签名
@@ -770,16 +772,29 @@ const signature = await tronWeb.trx._signTypedData(domain, types, message);
 Ledger 不支持 `signTypedData`，需传入裸哈希：
 
 ```javascript
-import AppTrx from "@ledgerhq/hw-app-trx";
-import TransportWebHID from "@ledgerhq/hw-transport-webhid";
+import AppTrx from '@ledgerhq/hw-app-trx'
+import TransportWebHID from '@ledgerhq/hw-transport-webhid'
 
 const { permitTransferMessageHash } = tronGasFree.getGasFreeLedgerRawHash({
-  message: { token, serviceProvider, user, receiver, value, maxFee, deadline, version, nonce },
-});
+  message: {
+    token,
+    serviceProvider,
+    user,
+    receiver,
+    value,
+    maxFee,
+    deadline,
+    version,
+    nonce,
+  },
+})
 
-const transport = await TransportWebHID.create();
-const app = new AppTrx(transport);
-const result = await app.signTransactionHash(derivationPath, permitTransferMessageHash);
+const transport = await TransportWebHID.create()
+const app = new AppTrx(transport)
+const result = await app.signTransactionHash(
+  derivationPath,
+  permitTransferMessageHash,
+)
 // result: { v, r, s }
 ```
 
@@ -796,21 +811,21 @@ DApp 通过 TronLink 注入的 provider 或 WalletConnect 发送签名请求：
 ```javascript
 // 方式 A：通过 TronWeb API（TronLink 扩展场景）
 const signature = await window.tronLink.tronWeb.trx.signTypedData(
-  domain,       // { name, version?, chainId, verifyingContract? }
-  types,        // { TypeName: [{ name, type }] }
-  message,      // 实际数据，不传 privateKey → 由钱包持有私钥
-);
+  domain, // { name, version?, chainId, verifyingContract? }
+  types, // { TypeName: [{ name, type }] }
+  message, // 实际数据，不传 privateKey → 由钱包持有私钥
+)
 
 // 方式 B：通过底层 Provider（兼容多钱包）
 const signature = await window.tronLink.request({
-  method: "tron_signTypedData",    // TRON 原生方法名
+  method: 'tron_signTypedData', // TRON 原生方法名
   // 部分钱包也接受：
   // method: "eth_signTypedData_v4",
   params: [
     userAddress,
-    JSON.stringify({ domain, types, primaryType, message })
-  ]
-});
+    JSON.stringify({ domain, types, primaryType, message }),
+  ],
+})
 ```
 
 **完整 Payload 类型定义：**
@@ -818,19 +833,19 @@ const signature = await window.tronLink.request({
 ```typescript
 interface TIP712Payload {
   domain: {
-    name?:              string;
-    version?:           string;
-    chainId?:           number | string;  // 十进制或十六进制字符串
-    verifyingContract?: string;           // Base58 地址
-    salt?:              string;           // bytes32 hex
-  };
+    name?: string
+    version?: string
+    chainId?: number | string // 十进制或十六进制字符串
+    verifyingContract?: string // Base58 地址
+    salt?: string // bytes32 hex
+  }
   types: {
     // key 为类型名，value 为字段列表
     // 不包含 EIP712Domain（由钱包自动处理）
-    [typeName: string]: Array<{ name: string; type: string }>;
-  };
-  primaryType: string;                    // 顶层消息类型名
-  message: Record<string, unknown>;       // 实际数据
+    [typeName: string]: Array<{ name: string; type: string }>
+  }
+  primaryType: string // 顶层消息类型名
+  message: Record<string, unknown> // 实际数据
 }
 ```
 
@@ -1092,11 +1107,11 @@ const signature = "0x" + result.r + result.s + result.v.toString(16).padStart(2,
 
 ```javascript
 function normalizeV(sig) {
-  const raw = sig.startsWith("0x") ? sig.slice(2) : sig;
-  const v = raw.slice(128, 130).toLowerCase();
-  if (v === "00") return "0x" + raw.slice(0, 128) + "1b";
-  if (v === "01") return "0x" + raw.slice(0, 128) + "1c";
-  return "0x" + raw; // 已是 1b/1c，不需要处理
+  const raw = sig.startsWith('0x') ? sig.slice(2) : sig
+  const v = raw.slice(128, 130).toLowerCase()
+  if (v === '00') return '0x' + raw.slice(0, 128) + '1b'
+  if (v === '01') return '0x' + raw.slice(0, 128) + '1c'
+  return '0x' + raw // 已是 1b/1c，不需要处理
 }
 ```
 
@@ -1147,78 +1162,93 @@ DApp                  Wallet JS             哈希计算          密钥管理�
 
 ```typescript
 interface PreviewField {
-  label:    string;
-  type:     string;
-  value?:   string;
-  raw?:     string;
-  children?: PreviewField[];  // 嵌套结构体
+  label: string
+  type: string
+  value?: string
+  raw?: string
+  children?: PreviewField[] // 嵌套结构体
 }
 
 function buildPreview(
-  types: Record<string, Array<{name: string; type: string}>>,
+  types: Record<string, Array<{ name: string; type: string }>>,
   typeName: string,
-  value: Record<string, unknown>
+  value: Record<string, unknown>,
 ): PreviewField[] {
-  const fields = types[typeName];
-  if (!fields) return [{ label: typeName, type: "unknown", value: String(value) }];
+  const fields = types[typeName]
+  if (!fields)
+    return [{ label: typeName, type: 'unknown', value: String(value) }]
 
   return fields.map((field) => {
-    const raw = value[field.name];
+    const raw = value[field.name]
 
     // 嵌套结构体 → 递归展开
     if (types[field.type]) {
       return {
         label: field.name,
-        type: "struct",
-        children: buildPreview(types, field.type, raw as Record<string, unknown>),
-      };
+        type: 'struct',
+        children: buildPreview(
+          types,
+          field.type,
+          raw as Record<string, unknown>,
+        ),
+      }
     }
 
     // address → Base58 格式显示（已经是 Base58 则直接展示）
-    if (field.type === "address") {
-      return { label: field.name, type: "address", value: String(raw) };
+    if (field.type === 'address') {
+      return { label: field.name, type: 'address', value: String(raw) }
     }
 
     // 金额字段 → 尝试换算为可读数值
-    if (field.type === "uint256" && isAmountField(field.name)) {
-      const amount = BigInt(String(raw));
+    if (field.type === 'uint256' && isAmountField(field.name)) {
+      const amount = BigInt(String(raw))
       return {
         label: field.name,
-        type:  "amount",
-        value: formatAmount(amount, 6),   // USDT 精度
-        raw:   String(raw),
-      };
+        type: 'amount',
+        value: formatAmount(amount, 6), // USDT 精度
+        raw: String(raw),
+      }
     }
 
     // 时间戳字段 → 转换为本地时间
-    if (field.type === "uint256" && isTimestampField(field.name)) {
-      const ts = Number(raw) * 1000;
+    if (field.type === 'uint256' && isTimestampField(field.name)) {
+      const ts = Number(raw) * 1000
       return {
         label: field.name,
-        type:  "timestamp",
+        type: 'timestamp',
         value: new Date(ts).toLocaleString(),
-        raw:   String(raw),
-      };
+        raw: String(raw),
+      }
     }
 
     // 其他字段 → 原始值显示
-    return { label: field.name, type: field.type, value: String(raw) };
-  });
+    return { label: field.name, type: field.type, value: String(raw) }
+  })
 }
 
-const AMOUNT_FIELDS    = new Set(["value", "amount", "maxFee", "requestedAmount"]);
-const TIMESTAMP_FIELDS = new Set(["deadline", "expiration", "sigDeadline", "validBefore", "validAfter"]);
+const AMOUNT_FIELDS = new Set(['value', 'amount', 'maxFee', 'requestedAmount'])
+const TIMESTAMP_FIELDS = new Set([
+  'deadline',
+  'expiration',
+  'sigDeadline',
+  'validBefore',
+  'validAfter',
+])
 
-function isAmountField(name: string)    { return AMOUNT_FIELDS.has(name); }
-function isTimestampField(name: string) { return TIMESTAMP_FIELDS.has(name); }
+function isAmountField(name: string) {
+  return AMOUNT_FIELDS.has(name)
+}
+function isTimestampField(name: string) {
+  return TIMESTAMP_FIELDS.has(name)
+}
 
 function formatAmount(amount: bigint, decimals: number): string {
-  const divisor = 10n ** BigInt(decimals);
-  const integer  = amount / divisor;
-  const fraction = amount % divisor;
+  const divisor = 10n ** BigInt(decimals)
+  const integer = amount / divisor
+  const fraction = amount % divisor
   return fraction === 0n
     ? integer.toString()
-    : `${integer}.${fraction.toString().padStart(decimals, "0").replace(/0+$/, "")}`;
+    : `${integer}.${fraction.toString().padStart(decimals, '0').replace(/0+$/, '')}`
 }
 ```
 
@@ -1226,56 +1256,65 @@ function formatAmount(amount: bigint, decimals: number): string {
 
 ```typescript
 interface Warning {
-  level:   "error" | "warning" | "info";
-  message: string;
+  level: 'error' | 'warning' | 'info'
+  message: string
 }
 
-function validateSignRequest(payload: TIP712Payload, currentChainId: number): Warning[] {
-  const warnings: Warning[] = [];
+function validateSignRequest(
+  payload: TIP712Payload,
+  currentChainId: number,
+): Warning[] {
+  const warnings: Warning[] = []
 
   // 1. ChainId 校验
   if (payload.domain.chainId !== undefined) {
-    const requested = Number(payload.domain.chainId) & 0xffffffff;
+    const requested = Number(payload.domain.chainId) & 0xffffffff
     if (requested !== (currentChainId & 0xffffffff)) {
       warnings.push({
-        level: "error",
+        level: 'error',
         message: `链 ID 不匹配：请求签名 ${requested}，当前网络 ${currentChainId & 0xffffffff}`,
-      });
+      })
     }
   }
 
   // 2. 已知合约检查
   const KNOWN_CONTRACTS = new Map([
-    ["TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m", "Permit2"],
-    ["TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U", "GasFreeController"],
-  ]);
+    ['TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m', 'Permit2'],
+    ['TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U', 'GasFreeController'],
+  ])
   const contractLabel = payload.domain.verifyingContract
     ? KNOWN_CONTRACTS.get(payload.domain.verifyingContract)
-    : null;
+    : null
   if (payload.domain.verifyingContract && !contractLabel) {
-    warnings.push({ level: "warning", message: `未知合约：${payload.domain.verifyingContract}` });
+    warnings.push({
+      level: 'warning',
+      message: `未知合约：${payload.domain.verifyingContract}`,
+    })
   }
 
   // 3. Deadline 检查
-  const deadline = findDeadline(payload.message);
+  const deadline = findDeadline(payload.message)
   if (deadline !== null) {
-    const now = Math.floor(Date.now() / 1000);
+    const now = Math.floor(Date.now() / 1000)
     if (deadline < now) {
-      warnings.push({ level: "error", message: "授权已过期" });
+      warnings.push({ level: 'error', message: '授权已过期' })
     } else if (deadline > now + 86400 * 30) {
-      warnings.push({ level: "warning", message: `授权有效期超过 30 天（至 ${new Date(deadline * 1000).toLocaleDateString()}）` });
+      warnings.push({
+        level: 'warning',
+        message: `授权有效期超过 30 天（至 ${new Date(deadline * 1000).toLocaleDateString()}）`,
+      })
     }
   }
 
-  return warnings;
+  return warnings
 }
 
 function findDeadline(message: Record<string, unknown>): number | null {
-  const candidates = ["deadline", "expiration", "sigDeadline", "validBefore"];
+  const candidates = ['deadline', 'expiration', 'sigDeadline', 'validBefore']
   for (const key of candidates) {
-    if (message[key] !== undefined) return Number(message[key]);
+    if (message[key] !== undefined) return Number(message[key])
   }
-  return null;
+  return null
 }
 ```
 
@@ -1285,36 +1324,41 @@ function findDeadline(message: Record<string, unknown>): number | null {
 
 ECDSA 签名由 `r`（32B）+ `s`（32B）+ `v`（1B）= 65 字节组成。
 
-| 来源 | v 原始值 | 含义 | 需要处理 |
-|------|---------|------|---------|
-| secp256k1 C 库 `recid` | 0 或 1 | recovery id | 需 +27 |
-| TronWeb 旧版输出 | `00` / `01` | recovery id | 需 +27 |
-| TronWeb 新版输出 | `1b` / `1c` | 已规范化 | 不需要 |
-| Ledger hw-app-trx | 27 或 28 (number) | 已规范化 | 不需要 |
-| web3j Sign.signMessage | 27 或 28 (byte) | 已规范化 | 不需要 |
+| 来源                   | v 原始值          | 含义        | 需要处理 |
+| ---------------------- | ----------------- | ----------- | -------- |
+| secp256k1 C 库 `recid` | 0 或 1            | recovery id | 需 +27   |
+| TronWeb 旧版输出       | `00` / `01`       | recovery id | 需 +27   |
+| TronWeb 新版输出       | `1b` / `1c`       | 已规范化    | 不需要   |
+| Ledger hw-app-trx      | 27 或 28 (number) | 已规范化    | 不需要   |
+| web3j Sign.signMessage | 27 或 28 (byte)   | 已规范化    | 不需要   |
 
 **规范化函数：**
 
 ```typescript
 function normalizeSignatureV(signature: string): string {
-  const raw = signature.startsWith("0x") ? signature.slice(2) : signature;
-  if (raw.length !== 130) throw new Error(`签名长度异常: ${raw.length} chars，期望 130`);
+  const raw = signature.startsWith('0x') ? signature.slice(2) : signature
+  if (raw.length !== 130)
+    throw new Error(`签名长度异常: ${raw.length} chars，期望 130`)
 
-  const v = raw.slice(128, 130).toLowerCase();
-  if (v === "00") return "0x" + raw.slice(0, 128) + "1b";
-  if (v === "01") return "0x" + raw.slice(0, 128) + "1c";
-  if (v === "1b" || v === "1c") return "0x" + raw;
-  throw new Error(`非法 v 值: ${v}`);
+  const v = raw.slice(128, 130).toLowerCase()
+  if (v === '00') return '0x' + raw.slice(0, 128) + '1b'
+  if (v === '01') return '0x' + raw.slice(0, 128) + '1c'
+  if (v === '1b' || v === '1c') return '0x' + raw
+  throw new Error(`非法 v 值: ${v}`)
 }
 
-function splitSignature(signature: string): { v: number; r: string; s: string } {
-  const normalized = normalizeSignatureV(signature);
-  const raw = normalized.slice(2);
+function splitSignature(signature: string): {
+  v: number
+  r: string
+  s: string
+} {
+  const normalized = normalizeSignatureV(signature)
+  const raw = normalized.slice(2)
   return {
-    r: "0x" + raw.slice(0,   64),
-    s: "0x" + raw.slice(64, 128),
-    v: parseInt(raw.slice(128), 16),  // 27 或 28
-  };
+    r: '0x' + raw.slice(0, 64),
+    s: '0x' + raw.slice(64, 128),
+    v: parseInt(raw.slice(128), 16), // 27 或 28
+  }
 }
 ```
 
@@ -1324,11 +1368,11 @@ function splitSignature(signature: string): { v: number; r: string; s: string } 
 
 ## 13. 链 ID 速查表
 
-| 网络 | 完整 chainId (hex) | TIP-712 chainId（`& 0xffffffff`） | 十进制 |
-|------|-------------------|----------------------------------|-------|
-| TRON 主网 | `0x000000002b6653dc` | `0x2b6653dc` | 728127452 |
-| Nile 测试网 | `0x00000000cd8690dc` | `0xcd8690dc` | 3448148188 |
-| Shasta 测试网 | `0x0000000094a9059e` | `0x94a9059e` | 2494104990 |
+| 网络          | 完整 chainId (hex)   | TIP-712 chainId（`& 0xffffffff`） | 十进制     |
+| ------------- | -------------------- | --------------------------------- | ---------- |
+| TRON 主网     | `0x000000002b6653dc` | `0x2b6653dc`                      | 728127452  |
+| Nile 测试网   | `0x00000000cd8690dc` | `0xcd8690dc`                      | 3448148188 |
+| Shasta 测试网 | `0x0000000094a9059e` | `0x94a9059e`                      | 2494104990 |
 
 ```javascript
 // JavaScript 中获取各网络的裁剪后 chainId
@@ -1351,132 +1395,159 @@ function normalizeChainId(chainId: number | string): number {
 ### 14.1 手动 TIP-712 哈希计算（TypeScript，无框架依赖）
 
 ```typescript
-import { keccak256 } from "ethereum-cryptography/keccak";
+import { keccak256 } from 'ethereum-cryptography/keccak'
 import {
-  utf8ToBytes, hexToBytes, bytesToHex, concatBytes
-} from "ethereum-cryptography/utils";
-import bs58 from "bs58";
+  utf8ToBytes,
+  hexToBytes,
+  bytesToHex,
+  concatBytes,
+} from 'ethereum-cryptography/utils'
+import bs58 from 'bs58'
 
 // ── 工具函数 ──────────────────────────────────────────────────────
 
 function keccak(data: Uint8Array): string {
-  return "0x" + bytesToHex(keccak256(data));
+  return '0x' + bytesToHex(keccak256(data))
 }
 
 /** TRON Base58 地址 → 32 字节左填零 uint160 编码 */
 function encodeTronAddress(base58Addr: string): string {
-  const decoded = bs58.decode(base58Addr); // 25 bytes: [version(1)] + [payload(20)] + [checksum(4)]
-  const payload = decoded.slice(1, 21);    // 取中间 20 字节，丢弃 0x41 前缀和 4 字节校验
-  return "0x" + "00".repeat(12) + bytesToHex(payload);
+  const decoded = bs58.decode(base58Addr) // 25 bytes: [version(1)] + [payload(20)] + [checksum(4)]
+  const payload = decoded.slice(1, 21) // 取中间 20 字节，丢弃 0x41 前缀和 4 字节校验
+  return '0x' + '00'.repeat(12) + bytesToHex(payload)
 }
 
 function padUint256(value: bigint): string {
   if (value < 0n) {
-    const mask = (1n << 256n) - 1n;
-    return "0x" + (value & mask).toString(16).padStart(64, "0");
+    const mask = (1n << 256n) - 1n
+    return '0x' + (value & mask).toString(16).padStart(64, '0')
   }
-  return "0x" + value.toString(16).padStart(64, "0");
+  return '0x' + value.toString(16).padStart(64, '0')
 }
 
 // ── 类型编码 ──────────────────────────────────────────────────────
 
-type TypeDef = Array<{ name: string; type: string }>;
-type Types   = Record<string, TypeDef>;
+type TypeDef = Array<{ name: string; type: string }>
+type Types = Record<string, TypeDef>
 
 /** 构建 encodeType 字符串，被引用类型按字母序追加 */
 function encodeType(typeName: string, types: Types): string {
-  const deps = new Set<string>();
+  const deps = new Set<string>()
   const collectDeps = (name: string) => {
     for (const field of types[name] ?? []) {
       if (types[field.type] && !deps.has(field.type)) {
-        deps.add(field.type);
-        collectDeps(field.type);
+        deps.add(field.type)
+        collectDeps(field.type)
       }
     }
-  };
-  collectDeps(typeName);
+  }
+  collectDeps(typeName)
 
   const buildDef = (name: string) =>
-    name + "(" + (types[name] ?? []).map((f) => `${f.type} ${f.name}`).join(",") + ")";
+    name +
+    '(' +
+    (types[name] ?? []).map((f) => `${f.type} ${f.name}`).join(',') +
+    ')'
 
-  return buildDef(typeName) + [...deps].sort().map(buildDef).join("");
+  return buildDef(typeName) + [...deps].sort().map(buildDef).join('')
 }
 
 function typeHash(typeName: string, types: Types): string {
-  return keccak(utf8ToBytes(encodeType(typeName, types)));
+  return keccak(utf8ToBytes(encodeType(typeName, types)))
 }
 
 function encodeField(value: unknown, type: string, types: Types): string {
-  if (types[type]) return hashStruct(value as Record<string, unknown>, type, types);
+  if (types[type])
+    return hashStruct(value as Record<string, unknown>, type, types)
 
-  if (type === "string") return keccak(utf8ToBytes(String(value)));
-  if (type === "bytes")  return keccak(hexToBytes((value as string).replace("0x", "")));
+  if (type === 'string') return keccak(utf8ToBytes(String(value)))
+  if (type === 'bytes')
+    return keccak(hexToBytes((value as string).replace('0x', '')))
 
-  if (type === "address") {
-    const v = String(value);
-    return v.startsWith("T")
-      ? encodeTronAddress(v)                          // Base58 → uint160
-      : "0x" + v.replace("0x", "").padStart(64, "0"); // hex → uint160
+  if (type === 'address') {
+    const v = String(value)
+    return v.startsWith('T')
+      ? encodeTronAddress(v) // Base58 → uint160
+      : '0x' + v.replace('0x', '').padStart(64, '0') // hex → uint160
   }
 
-  if (type === "bool") return padUint256(value ? 1n : 0n);
+  if (type === 'bool') return padUint256(value ? 1n : 0n)
 
   if (/^bytes\d+$/.test(type)) {
-    const hex = (value as string).replace("0x", "");
-    return "0x" + hex.padEnd(64, "0");  // bytes 类型右填零
+    const hex = (value as string).replace('0x', '')
+    return '0x' + hex.padEnd(64, '0') // bytes 类型右填零
   }
 
-  if (/^(u?int\d*|trcToken)$/.test(type)) return padUint256(BigInt(String(value)));
+  if (/^(u?int\d*|trcToken)$/.test(type))
+    return padUint256(BigInt(String(value)))
 
-  if (type.endsWith("]")) {
-    const elemType = type.slice(0, type.lastIndexOf("["));
-    const arr = Array.isArray(value) ? value : [value];
-    const encoded = arr.map((v) => hexToBytes(encodeField(v, elemType, types).slice(2)));
-    return keccak(concatBytes(...encoded));
+  if (type.endsWith(']')) {
+    const elemType = type.slice(0, type.lastIndexOf('['))
+    const arr = Array.isArray(value) ? value : [value]
+    const encoded = arr.map((v) =>
+      hexToBytes(encodeField(v, elemType, types).slice(2)),
+    )
+    return keccak(concatBytes(...encoded))
   }
 
-  throw new Error(`Unknown type: ${type}`);
+  throw new Error(`Unknown type: ${type}`)
 }
 
-function encodeData(value: Record<string, unknown>, typeName: string, types: Types): Uint8Array {
-  const th = hexToBytes(typeHash(typeName, types).slice(2));
+function encodeData(
+  value: Record<string, unknown>,
+  typeName: string,
+  types: Types,
+): Uint8Array {
+  const th = hexToBytes(typeHash(typeName, types).slice(2))
   const fields = (types[typeName] ?? []).map((field) =>
-    hexToBytes(encodeField(value[field.name], field.type, types).slice(2))
-  );
-  return concatBytes(th, ...fields);
+    hexToBytes(encodeField(value[field.name], field.type, types).slice(2)),
+  )
+  return concatBytes(th, ...fields)
 }
 
-function hashStruct(value: Record<string, unknown>, typeName: string, types: Types): string {
-  return keccak(encodeData(value, typeName, types));
+function hashStruct(
+  value: Record<string, unknown>,
+  typeName: string,
+  types: Types,
+): string {
+  return keccak(encodeData(value, typeName, types))
 }
 
 // ── Domain Separator ──────────────────────────────────────────────
 
 type Domain = {
-  name?: string; version?: string;
-  chainId?: number | string;
-  verifyingContract?: string; salt?: string;
-};
+  name?: string
+  version?: string
+  chainId?: number | string
+  verifyingContract?: string
+  salt?: string
+}
 
 function buildDomainTypes(domain: Domain): Types {
-  const fields: TypeDef = [];
-  if (domain.name              != null) fields.push({ name: "name",              type: "string"  });
-  if (domain.version           != null) fields.push({ name: "version",           type: "string"  });
-  if (domain.chainId           != null) fields.push({ name: "chainId",           type: "uint256" });
-  if (domain.verifyingContract != null) fields.push({ name: "verifyingContract", type: "address" });
-  if (domain.salt              != null) fields.push({ name: "salt",              type: "bytes32" });
-  return { EIP712Domain: fields };
+  const fields: TypeDef = []
+  if (domain.name != null) fields.push({ name: 'name', type: 'string' })
+  if (domain.version != null) fields.push({ name: 'version', type: 'string' })
+  if (domain.chainId != null) fields.push({ name: 'chainId', type: 'uint256' })
+  if (domain.verifyingContract != null)
+    fields.push({ name: 'verifyingContract', type: 'address' })
+  if (domain.salt != null) fields.push({ name: 'salt', type: 'bytes32' })
+  return { EIP712Domain: fields }
 }
 
 function computeDomainSeparator(domain: Domain): string {
-  const types = buildDomainTypes(domain);
+  const types = buildDomainTypes(domain)
   const normalizedDomain = {
     ...domain,
-    chainId: domain.chainId != null
-      ? String(Number(domain.chainId) & 0xffffffff)  // ← 关键裁剪
-      : undefined,
-  };
-  return hashStruct(normalizedDomain as Record<string, unknown>, "EIP712Domain", types);
+    chainId:
+      domain.chainId != null
+        ? String(Number(domain.chainId) & 0xffffffff) // ← 关键裁剪
+        : undefined,
+  }
+  return hashStruct(
+    normalizedDomain as Record<string, unknown>,
+    'EIP712Domain',
+    types,
+  )
 }
 
 // ── 最终签名哈希 ──────────────────────────────────────────────────
@@ -1485,50 +1556,50 @@ function computeSigningHash(
   domain: Domain,
   types: Types,
   primaryType: string,
-  message: Record<string, unknown>
+  message: Record<string, unknown>,
 ): string {
-  const ds = hexToBytes(computeDomainSeparator(domain).slice(2));
-  const ms = hexToBytes(hashStruct(message, primaryType, types).slice(2));
-  return keccak(concatBytes(hexToBytes("1901"), ds, ms));
+  const ds = hexToBytes(computeDomainSeparator(domain).slice(2))
+  const ms = hexToBytes(hashStruct(message, primaryType, types).slice(2))
+  return keccak(concatBytes(hexToBytes('1901'), ds, ms))
 }
 
 // ── 使用示例：GasFree PermitTransfer ─────────────────────────────
 
 const signingHash = computeSigningHash(
   {
-    name: "GasFreeController",
-    version: "V1.0.0",
-    chainId: "0x2b6653dc",
-    verifyingContract: "TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U",
+    name: 'GasFreeController',
+    version: 'V1.0.0',
+    chainId: '0x2b6653dc',
+    verifyingContract: 'TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U',
   },
   {
     PermitTransfer: [
-      { name: "token",           type: "address" },
-      { name: "serviceProvider", type: "address" },
-      { name: "user",            type: "address" },
-      { name: "receiver",        type: "address" },
-      { name: "value",           type: "uint256" },
-      { name: "maxFee",          type: "uint256" },
-      { name: "deadline",        type: "uint256" },
-      { name: "version",         type: "uint256" },
-      { name: "nonce",           type: "uint256" },
+      { name: 'token', type: 'address' },
+      { name: 'serviceProvider', type: 'address' },
+      { name: 'user', type: 'address' },
+      { name: 'receiver', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'maxFee', type: 'uint256' },
+      { name: 'deadline', type: 'uint256' },
+      { name: 'version', type: 'uint256' },
+      { name: 'nonce', type: 'uint256' },
     ],
   },
-  "PermitTransfer",
+  'PermitTransfer',
   {
-    token:           "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-    serviceProvider: "TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp",
-    user:            "TYRhsi1fkke2tjdVW9XGYLjf8TgbbutEgY",
-    receiver:        "TW1dWXfta5ygVN298JBN2UPhaSAUzo2owZ",
-    value:           "3000000",
-    maxFee:          "2000000",
-    deadline:        "1735689600",
-    version:         "1",
-    nonce:           "0",
-  }
-);
+    token: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+    serviceProvider: 'TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp',
+    user: 'TYRhsi1fkke2tjdVW9XGYLjf8TgbbutEgY',
+    receiver: 'TW1dWXfta5ygVN298JBN2UPhaSAUzo2owZ',
+    value: '3000000',
+    maxFee: '2000000',
+    deadline: '1735689600',
+    version: '1',
+    nonce: '0',
+  },
+)
 
-console.log("signingHash:", signingHash);
+console.log('signingHash:', signingHash)
 // 将此值传入 secp256k1 签名引擎
 ```
 
@@ -1602,18 +1673,18 @@ contract TIP712Verifier {
 
 ### 15.1 常见错误速查
 
-| 错误现象 | 根本原因 | 解决方案 |
-|---------|---------|---------|
-| `ecrecover` 返回错误地址 | chainId 未做 `& 0xffffffff` | 前端、合约、钱包三端统一裁剪 |
-| `ecrecover` 返回 address(0) | v 值是 0/1 而非 27/28 | 调用 `normalizeV()`，对 recovery id +27 |
-| domain separator 不一致 | domain 字段顺序错误或包含了不该有的字段 | 按规范顺序，只包含合约实际使用的字段 |
-| 地址编码错误 | 手动计算时未去掉 0x41 前缀 | Base58 解码后取 `[1:21]`，不取 `[0]` |
-| Permit2 验签失败 | domain 中加了 `version` 字段 | Permit2 的 domain **没有** version |
-| GasFree 签名被拒绝 | `user` 字段填入了 GasFree 合约地址 | `user` 必须是用户真实 EOA 地址 |
-| 嵌套结构体哈希错误 | 忘记对嵌套结构体做 `hashStruct` | 结构体字段值 = `hashStruct(嵌套结构体)`，不是 encodeData |
-| typeString 不匹配 | 字段间逗号后有空格 | 类型字符串中逗号后**无空格** |
-| RN 原生签名结果错误 | 对 signingHash 做了二次 keccak/SHA256 | 直接对 32 字节哈希签名，不需要再 hash |
-| 被引用类型顺序错误 | 手动拼接 typeString 时顺序错误 | 被引用类型必须**按字母序**追加 |
+| 错误现象                    | 根本原因                                | 解决方案                                                 |
+| --------------------------- | --------------------------------------- | -------------------------------------------------------- |
+| `ecrecover` 返回错误地址    | chainId 未做 `& 0xffffffff`             | 前端、合约、钱包三端统一裁剪                             |
+| `ecrecover` 返回 address(0) | v 值是 0/1 而非 27/28                   | 调用 `normalizeV()`，对 recovery id +27                  |
+| domain separator 不一致     | domain 字段顺序错误或包含了不该有的字段 | 按规范顺序，只包含合约实际使用的字段                     |
+| 地址编码错误                | 手动计算时未去掉 0x41 前缀              | Base58 解码后取 `[1:21]`，不取 `[0]`                     |
+| Permit2 验签失败            | domain 中加了 `version` 字段            | Permit2 的 domain **没有** version                       |
+| GasFree 签名被拒绝          | `user` 字段填入了 GasFree 合约地址      | `user` 必须是用户真实 EOA 地址                           |
+| 嵌套结构体哈希错误          | 忘记对嵌套结构体做 `hashStruct`         | 结构体字段值 = `hashStruct(嵌套结构体)`，不是 encodeData |
+| typeString 不匹配           | 字段间逗号后有空格                      | 类型字符串中逗号后**无空格**                             |
+| RN 原生签名结果错误         | 对 signingHash 做了二次 keccak/SHA256   | 直接对 32 字节哈希签名，不需要再 hash                    |
+| 被引用类型顺序错误          | 手动拼接 typeString 时顺序错误          | 被引用类型必须**按字母序**追加                           |
 
 ### 15.2 钱包实现完整检查清单
 
@@ -1657,11 +1728,11 @@ contract TIP712Verifier {
 
 ### 15.3 Domain 配置速查（各场景）
 
-| 场景 | name | version | chainId (主网) | verifyingContract |
-|------|------|---------|---------------|-------------------|
-| TRC-20 Permit | 代币名称 | `"1"` | `0x2b6653dc` | 代币合约地址 |
-| Permit2 SignatureTransfer | `"Permit2"` | ❌ 无此字段 | `0x2b6653dc` | `TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m` |
-| GasFree PermitTransfer | `"GasFreeController"` | `"V1.0.0"` | `0x2b6653dc` | `TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U` |
+| 场景                      | name                  | version     | chainId (主网) | verifyingContract                    |
+| ------------------------- | --------------------- | ----------- | -------------- | ------------------------------------ |
+| TRC-20 Permit             | 代币名称              | `"1"`       | `0x2b6653dc`   | 代币合约地址                         |
+| Permit2 SignatureTransfer | `"Permit2"`           | ❌ 无此字段 | `0x2b6653dc`   | `TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m` |
+| GasFree PermitTransfer    | `"GasFreeController"` | `"V1.0.0"`  | `0x2b6653dc`   | `TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U` |
 
 ### 15.4 typeString 格式规范
 

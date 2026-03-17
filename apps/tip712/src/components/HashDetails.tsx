@@ -17,11 +17,20 @@ export function HashDetails() {
         <HashRow label="Message Hash" value={hashResult.messageHash} />
         <div className="pt-2 border-t">
           <HashRow label="Domain Type Hash" value={hashResult.domainTypeHash} />
-          <TypeStringRow label="Domain Type" value={hashResult.domainTypeString} />
+          <TypeStringRow
+            label="Domain Type"
+            value={hashResult.domainTypeString}
+          />
         </div>
         <div className="pt-2 border-t">
-          <HashRow label="Message Type Hash" value={hashResult.messageTypeHash} />
-          <TypeStringRow label="Message Type" value={hashResult.messageTypeString} />
+          <HashRow
+            label="Message Type Hash"
+            value={hashResult.messageTypeHash}
+          />
+          <TypeStringRow
+            label="Message Type"
+            value={hashResult.messageTypeString}
+          />
         </div>
       </CardContent>
     </Card>
@@ -42,7 +51,9 @@ function HashRow({
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
       <p
         className={`text-xs font-mono break-all mt-0.5 ${
-          primary ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-foreground'
+          primary
+            ? 'text-blue-600 dark:text-blue-400 font-semibold'
+            : 'text-foreground'
         }`}
       >
         {value}

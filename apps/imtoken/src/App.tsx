@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Provider } from 'jotai'
-import {
-  ThemeProvider,
-  ModeToggle,
-  Separator,
-  Button,
-  useToast,
-} from '@ui/components'
+import { ThemeProvider, Separator, Button, useToast } from '@ui/components'
 import {
   useWalletState,
   useWalletActions,
@@ -152,9 +146,8 @@ function AppContent() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <Header />
-          <ModeToggle />
         </div>
 
         <div className="space-y-8">

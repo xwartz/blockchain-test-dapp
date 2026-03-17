@@ -24,9 +24,9 @@ export function SignTx({
   if (!chain) return null
 
   return (
-    <div className="p-5 text-center">
+    <div className="px-4 py-5 max-w-xl mx-auto space-y-4">
       <h3 className="text-xl font-semibold">Sign Tx</h3>
-      <div className="gap-1.5">
+      <div className="space-y-1">
         <Label htmlFor="recipient">Recipient</Label>
         <Input
           type="text"
@@ -35,7 +35,7 @@ export function SignTx({
           onChange={onRecipientChange}
         />
       </div>
-      <div className="gap-1.5">
+      <div className="space-y-1">
         <Label htmlFor="amount">Amount</Label>
         <Input
           type="number"
@@ -44,22 +44,22 @@ export function SignTx({
           onChange={onAmountChange}
         />
       </div>
-      <div className="gap-1.5">
+      <div className="space-y-1">
         <Label htmlFor="denom">Denom</Label>
         <Input id="denom" placeholder="denom" onChange={onDenomChange} />
       </div>
-      <div className="gap-1.5">
+      <div className="space-y-1">
         <Label htmlFor="memo">Memo</Label>
         <Input id="memo" placeholder="memo" onChange={onMemoChange} />
       </div>
-      <Button variant="default" onClick={onSignTx} className="mt-2">
+      <Button variant="default" onClick={onSignTx} className="w-full sm:w-auto">
         Sign
       </Button>
-      <div className="mt-2">
+      <div className="mt-2 text-left">
         <p>unSigned Tx: </p>
         <code className="rounded bg-muted text-sm break-all">{unSignedTx}</code>
       </div>
-      <div className="mt-2">
+      <div className="mt-2 text-left">
         <p>Signature: </p>
         <code className="rounded bg-muted text-sm break-all">{signature}</code>
       </div>

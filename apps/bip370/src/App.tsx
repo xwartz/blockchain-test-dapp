@@ -1,5 +1,5 @@
 import { useReducer, useCallback } from 'react'
-import { ThemeProvider, ModeToggle } from '@ui/components'
+import { ThemeProvider } from '@ui/components'
 import { toPsbtNetwork } from '@/utils/network/transport'
 import { useDefaultProvider } from '@/utils/providers'
 import { Network } from '@/utils/providers/base'
@@ -236,7 +236,7 @@ function App() {
       <Header />
       <Separator />
 
-      <div className="p-5 text-center" style={{ maxWidth: '100%' }}>
+      <div className="max-w-2xl mx-auto w-full px-4 py-5">
         <ConnectButton
           connected={state.connected}
           onConnect={onConnect}
@@ -272,10 +272,7 @@ function App() {
 
 function Header() {
   return (
-    <div className="text-center m-6 relative">
-      <div className="absolute top-0 right-0">
-        <ModeToggle />
-      </div>
+    <div className="text-center px-4 py-6">
       <h2 className="border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         BIP-370
       </h2>
@@ -299,19 +296,25 @@ function Header() {
 
 function WalletInfo({ network, address, balance }: Partial<State>) {
   return (
-    <div className="m-5">
+    <div className="my-5 space-y-3">
       <h3 className="text-xl font-semibold">Wallet Info</h3>
-      <div className="mt-2">
-        <p>Network: </p>
-        <code className="rounded bg-muted text-sm break-all">{network}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Network</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {network}
+        </code>
       </div>
-      <div className="mt-2">
-        <p>Address: </p>
-        <code className="rounded bg-muted text-sm break-all">{address}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Address</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {address}
+        </code>
       </div>
-      <div className="mt-2">
-        <p>Balance: </p>
-        <code className="rounded bg-muted text-sm break-all">{balance}</code>
+      <div>
+        <p className="text-sm text-muted-foreground">Balance</p>
+        <code className="rounded bg-muted text-sm break-all block p-1">
+          {balance}
+        </code>
       </div>
     </div>
   )
@@ -370,10 +373,10 @@ function SignPSBT({
   onSend: () => void
 }) {
   return (
-    <div className="m-5 text-center">
-      <h3 className="text-xl font-semibold">Sign PSBT</h3>
+    <div className="my-5 space-y-4 text-left">
+      <h3 className="text-xl font-semibold text-center">Sign PSBT</h3>
 
-      <div className="mt-4 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
+      <div className="grid w-full gap-2">
         <Label htmlFor="utxos">Generate PSBT</Label>
         <Textarea
           rows={10}
@@ -387,7 +390,7 @@ function SignPSBT({
         </Button>
       </div>
 
-      <div className="mt-4 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
+      <div className="grid w-full gap-2">
         <Label htmlFor="message">PSBT Hex: </Label>
         <Textarea
           placeholder="Type your PSBT Hex here."
@@ -395,13 +398,15 @@ function SignPSBT({
           defaultValue={psbt}
           onChange={onChangePsbtHex}
         />
-        <Button onClick={onSignPsbt}>SignPsbt</Button>
-        <Button variant="secondary" onClick={onSignPsbts}>
-          SignPsbts
-        </Button>
-        <div className="mt-2">
-          <p>Signature: </p>
-          <code className="rounded bg-muted text-sm break-all">
+        <div className="grid grid-cols-2 gap-2">
+          <Button onClick={onSignPsbt}>SignPsbt</Button>
+          <Button variant="secondary" onClick={onSignPsbts}>
+            SignPsbts
+          </Button>
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Signature</p>
+          <code className="rounded bg-muted text-sm break-all block p-1">
             {signature}
           </code>
         </div>
@@ -409,16 +414,20 @@ function SignPSBT({
           <Send className="mr-2 h-4 w-4" /> Send
         </Button>
       </div>
-      <div className="mt-4 grid w-full gap-2 grid w-full max-w-2xl mx-auto">
+      <div className="grid w-full gap-2">
         <Button variant="outline" onClick={onDecode}>
           Decode
         </Button>
-        <div className="mt-2">
-          <p className="mb-2">decode result(local): </p>
+        <div>
+          <p className="mb-2 text-sm text-muted-foreground">
+            decode result (local):{' '}
+          </p>
           <Textarea defaultValue={decodeRes} rows={15} />
         </div>
-        <div className="mt-2">
-          <p className="mb-2">decode result(RPC Node): </p>
+        <div>
+          <p className="mb-2 text-sm text-muted-foreground">
+            decode result (RPC Node):{' '}
+          </p>
           <Textarea defaultValue={decodeResFromNode} rows={15} />
         </div>
       </div>

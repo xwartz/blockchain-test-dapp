@@ -28,11 +28,15 @@ export function Mnemonic({
   selectedChainName: string
 }) {
   return (
-    <div className="p-5 text-center">
-      <Button variant="destructive" onClick={generateMnemonic}>
+    <div className="px-4 py-5 space-y-4 max-w-xl mx-auto">
+      <Button
+        variant="destructive"
+        onClick={generateMnemonic}
+        className="w-full sm:w-auto"
+      >
         Generate Mnemonic
       </Button>
-      <div className="mt-2">
+      <div className="space-y-1">
         <Label htmlFor="mnemonic">Mnemonic: </Label>
         <Textarea
           placeholder="Type your Mnemonic here."
@@ -41,9 +45,9 @@ export function Mnemonic({
           onChange={onMnemonicChange}
         />
       </div>
-      <div className="mt-2 grid justify-items-center">
+      <div className="space-y-1">
         <Select onValueChange={onSelectChange} value={selectedChainName}>
-          <SelectTrigger className="w-[280px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a Chain" />
           </SelectTrigger>
           <SelectContent>
@@ -58,11 +62,13 @@ export function Mnemonic({
           </SelectContent>
         </Select>
       </div>
-      <div className="mt-2">
-        <Button variant="secondary" onClick={generateAddress}>
-          Generate Address
-        </Button>
-      </div>
+      <Button
+        variant="secondary"
+        onClick={generateAddress}
+        className="w-full sm:w-auto"
+      >
+        Generate Address
+      </Button>
     </div>
   )
 }

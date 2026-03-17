@@ -76,7 +76,11 @@ function encodeType(
   const collectDeps = (name: string) => {
     for (const field of types[name] || []) {
       const baseType = field.type.replace(/\[\d*\]$/, '') // strip array suffix
-      if (types[baseType] && baseType !== typeName && !referenced.has(baseType)) {
+      if (
+        types[baseType] &&
+        baseType !== typeName &&
+        !referenced.has(baseType)
+      ) {
         referenced.add(baseType)
         collectDeps(baseType)
       }
@@ -205,7 +209,9 @@ function hashStruct(
   if (!fields) throw new Error(`Type not found: ${typeName}`)
 
   const th = typeHash(typeName, types)
-  const encodedFields = fields.map((f) => encodeField(f.type, data[f.name], types))
+  const encodedFields = fields.map((f) =>
+    encodeField(f.type, data[f.name], types),
+  )
 
   // Concatenate: typeHash + encodedField1 + encodedField2 + ...
   const totalLen = 32 + encodedFields.length * 32
@@ -221,8 +227,10 @@ function hashStruct(
 function buildDomainType(domain: TIP712Domain): TIP712TypeField[] {
   const fields: TIP712TypeField[] = []
   if (domain.name !== undefined) fields.push({ name: 'name', type: 'string' })
-  if (domain.version !== undefined) fields.push({ name: 'version', type: 'string' })
-  if (domain.chainId !== undefined) fields.push({ name: 'chainId', type: 'uint256' })
+  if (domain.version !== undefined)
+    fields.push({ name: 'version', type: 'string' })
+  if (domain.chainId !== undefined)
+    fields.push({ name: 'chainId', type: 'uint256' })
   if (domain.verifyingContract !== undefined)
     fields.push({ name: 'verifyingContract', type: 'address' })
   if (domain.salt !== undefined) fields.push({ name: 'salt', type: 'bytes32' })
@@ -318,10 +326,5 @@ export function splitSignature(signature: string): {
 
 export function normalizeSignature(signature: string): string {
   const { r, s, v } = splitSignature(signature)
-  return (
-    '0x' +
-    r.slice(2) +
-    s.slice(2) +
-    v.toString(16).padStart(2, '0')
-  )
+  return '0x' + r.slice(2) + s.slice(2) + v.toString(16).padStart(2, '0')
 }

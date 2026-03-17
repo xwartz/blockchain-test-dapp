@@ -79,7 +79,8 @@ export function GasFreePanel() {
       return
     }
     try {
-      const chain = network === 'mainnet' ? TRON_CHAINS.mainnet : TRON_CHAINS.nile
+      const chain =
+        network === 'mainnet' ? TRON_CHAINS.mainnet : TRON_CHAINS.nile
       const gasFree = new TronGasFree({ chainId: chain.chainId })
       const derived = gasFree.generateGasFreeAddress(walletAddress)
       setGasFreeAddress(derived)
@@ -97,7 +98,8 @@ export function GasFreePanel() {
   }, [deadline])
 
   const config = GASFREE_CONFIG[network]
-  const chainInfo = network === 'mainnet' ? TRON_CHAINS.mainnet : TRON_CHAINS.nile
+  const chainInfo =
+    network === 'mainnet' ? TRON_CHAINS.mainnet : TRON_CHAINS.nile
 
   const buildPayload = useCallback((): TIP712Payload => {
     return {
@@ -232,7 +234,10 @@ export function GasFreePanel() {
       setSubmitResult(text)
 
       if (res.ok) {
-        toast({ title: 'Submitted', description: 'Transaction submitted successfully.' })
+        toast({
+          title: 'Submitted',
+          description: 'Transaction submitted successfully.',
+        })
       } else {
         toast({
           title: 'Submit Failed',
@@ -275,7 +280,10 @@ export function GasFreePanel() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs">Network</Label>
-              <Select value={network} onValueChange={(v) => setNetwork(v as NetworkKey)}>
+              <Select
+                value={network}
+                onValueChange={(v) => setNetwork(v as NetworkKey)}
+              >
                 <SelectTrigger className="h-8 text-xs mt-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -297,7 +305,11 @@ export function GasFreePanel() {
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(TRON_TOKENS).map((t) => (
-                    <SelectItem key={t.address} value={t.address} className="text-xs">
+                    <SelectItem
+                      key={t.address}
+                      value={t.address}
+                      className="text-xs"
+                    >
                       {t.symbol}
                     </SelectItem>
                   ))}
@@ -326,18 +338,31 @@ export function GasFreePanel() {
           />
 
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Value (atomic)" value={value} onChange={setValue} />
-            <FormField label="Max Fee (atomic)" value={maxFee} onChange={setMaxFee} />
+            <FormField
+              label="Value (atomic)"
+              value={value}
+              onChange={setValue}
+            />
+            <FormField
+              label="Max Fee (atomic)"
+              value={maxFee}
+              onChange={setMaxFee}
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Deadline (unix)" value={deadline} onChange={setDeadline} />
+            <FormField
+              label="Deadline (unix)"
+              value={deadline}
+              onChange={setDeadline}
+            />
             <FormField label="Nonce" value={nonce} onChange={setNonce} />
           </div>
 
           <div className="text-xs text-muted-foreground p-2 bg-muted/50 rounded-md">
             <strong>Contract:</strong> {config.controllerAddress}
             <br />
-            <strong>Chain ID:</strong> {chainInfo.chainIdHex} ({chainInfo.chainId})
+            <strong>Chain ID:</strong> {chainInfo.chainIdHex} (
+            {chainInfo.chainId})
           </div>
 
           <Button
@@ -364,7 +389,8 @@ export function GasFreePanel() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-xs text-muted-foreground">
-            After signing, submit the signed transaction to a GasFree service provider API endpoint.
+            After signing, submit the signed transaction to a GasFree service
+            provider API endpoint.
           </p>
           <FormField
             label="API Endpoint"

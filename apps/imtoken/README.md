@@ -45,6 +45,7 @@ pnpm lint
 ## imToken Integration
 
 This dapp integrates with imToken wallet to:
+
 - Connect to Ethereum Sepolia network
 - Connect to Bitcoin Signet network
 - Sign Ethereum transactions
