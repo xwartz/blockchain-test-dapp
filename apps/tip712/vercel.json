@@ -1,0 +1,7 @@
+{
+  "name": "blockchain-test-dapp-tip712",
+  "buildCommand": "cd ../.. && pnpm build --filter=tip712",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "vite"
+}

@@ -58,6 +58,12 @@ function AppContent() {
       url: getAppUrl('imtoken', 3005, theme),
       icon: '🔑',
     },
+    {
+      name: 'TIP-712',
+      description: 'TIP-712 payload signing and verification',
+      url: getAppUrl('tip712', 3006, theme),
+      icon: 'T',
+    },
   ]
 
   return (
