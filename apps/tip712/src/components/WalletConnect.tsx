@@ -1,6 +1,6 @@
 import { Button, Wallet } from '@ui/components'
 import { useWalletState, useWalletActions } from '@/store/hooks'
-import { connectTronLink, isTronLinkInstalled, getCurrentAddress } from '@/utils/tronlink'
+import { connectWallet, isTronWalletAvailable, getCurrentAddress } from '@/utils/tronlink'
 import { useToast } from '@ui/components'
 import { useEffect } from 'react'
 
@@ -12,7 +12,7 @@ export function WalletConnect() {
 
   // Auto-reconnect on mount only (not after manual disconnect)
   useEffect(() => {
-    if (!isTronLinkInstalled()) return
+    if (!isTronWalletAvailable()) return
     const addr = getCurrentAddress()
     if (addr) {
       setAddress(addr)
@@ -22,10 +22,10 @@ export function WalletConnect() {
   }, [])
 
   const handleConnect = async () => {
-    if (!isTronLinkInstalled()) {
+    if (!isTronWalletAvailable()) {
       toast({
-        title: 'TronLink Not Found',
-        description: 'Please install TronLink browser extension.',
+        title: 'Wallet Not Found',
+        description: 'Please install a Tron wallet extension (e.g. TronLink).',
         variant: 'destructive',
       })
       return
@@ -33,7 +33,7 @@ export function WalletConnect() {
 
     setIsLoading(true)
     try {
-      const { address: addr, addressHex } = await connectTronLink()
+      const { address: addr, addressHex } = await connectWallet()
       setAddress(addr)
       setAddressHex(addressHex)
       setIsConnected(true)
@@ -78,7 +78,7 @@ export function WalletConnect() {
   return (
     <Button onClick={handleConnect} disabled={isLoading} className="w-full">
       <Wallet className="mr-2 h-4 w-4" />
-      {isLoading ? 'Connecting...' : 'Connect TronLink'}
+      {isLoading ? 'Connecting...' : 'Connect Wallet'}
     </Button>
   )
 }

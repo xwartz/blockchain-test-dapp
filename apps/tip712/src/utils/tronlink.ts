@@ -1,42 +1,47 @@
 import type { TronWeb, TronLink, TIP712Domain, TIP712TypeField } from '@/types'
 
-/** Get TronLink instance from window */
+/** Get TronLink instance from window (if present) */
 export function getTronLink(): TronLink | null {
   if (typeof window === 'undefined') return null
   return window.tronLink ?? null
 }
 
-/** Get TronWeb instance from TronLink or window */
+/** Get TronWeb instance — supports any wallet that injects window.tronWeb */
 export function getTronWeb(): TronWeb | null {
+  if (typeof window === 'undefined') return null
   const tronLink = getTronLink()
   if (tronLink?.ready && tronLink.tronWeb) return tronLink.tronWeb
   if (window.tronWeb) return window.tronWeb
   return null
 }
 
-/** Check if TronLink is installed */
-export function isTronLinkInstalled(): boolean {
-  return getTronLink() !== null
+/** Check if any Tron wallet is available (TronLink or any window.tronWeb injector) */
+export function isTronWalletAvailable(): boolean {
+  return getTronWeb() !== null
 }
 
-/** Request TronLink connection */
-export async function connectTronLink(): Promise<{
+/** @deprecated use isTronWalletAvailable */
+export const isTronLinkInstalled = isTronWalletAvailable
+
+/**
+ * Request wallet connection.
+ * - If a TronLink-compatible wallet is present, uses tron_requestAccounts.
+ * - Otherwise reads the already-injected tronWeb address directly.
+ */
+export async function connectWallet(): Promise<{
   address: string
   addressHex: string
 }> {
   const tronLink = getTronLink()
-  if (!tronLink) {
-    throw new Error(
-      'TronLink not found. Please install TronLink extension.',
-    )
-  }
 
-  // Request accounts
-  await tronLink.request({ method: 'tron_requestAccounts' })
+  if (tronLink) {
+    // TronLink-compatible: trigger the approval popup
+    await tronLink.request({ method: 'tron_requestAccounts' })
+  }
 
   const tronWeb = getTronWeb()
   if (!tronWeb?.defaultAddress?.base58) {
-    throw new Error('Failed to get address from TronLink. Please unlock your wallet.')
+    throw new Error('No Tron wallet found or wallet is locked. Please unlock your wallet.')
   }
 
   return {
@@ -44,6 +49,9 @@ export async function connectTronLink(): Promise<{
     addressHex: tronWeb.defaultAddress.hex,
   }
 }
+
+/** @deprecated use connectWallet */
+export const connectTronLink = connectWallet
 
 /** Normalize a signTypedData return value to a plain hex string. */
 function extractSignature(raw: unknown): string {
@@ -89,7 +97,7 @@ export async function signTypedData(
   const tronWeb = getTronWeb()
   if (!tronWeb) throw new Error('TronWeb not available')
 
-  // ── Browser path: route through TronLink popup ──────────────────────────
+  // ── Browser path: wallet has a request() API (TronLink-compatible) ──────
   if (tronLink) {
     const address = tronWeb.defaultAddress?.base58
     if (!address) throw new Error('No connected address')
@@ -132,7 +140,7 @@ export async function signTypedData(
     }
 
     throw new Error(
-      'TronLink does not support typed data signing on this version. Please update TronLink.',
+      'Wallet does not support typed data signing on this version. Please update your wallet.',
     )
   }
 
