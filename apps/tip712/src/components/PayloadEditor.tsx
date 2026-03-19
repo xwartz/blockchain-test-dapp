@@ -138,7 +138,7 @@ export function PayloadEditor() {
         description: 'Signature obtained successfully.',
       })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Signing failed'
+      const msg = `Signing failed: ${err instanceof Error ? err.message : String(err)}`
       setSignatureError(msg)
       toast({ title: 'Sign Error', description: msg, variant: 'destructive' })
     } finally {
