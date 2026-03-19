@@ -187,7 +187,13 @@ export function GasFreePanel() {
       setSignatureResult({ signature: sig, r, s, v })
       toast({ title: 'Signed', description: 'GasFree PermitTransfer signed.' })
     } catch (err) {
-      const msg = `Signing failed: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : ((err as Record<string, string>)?.message ?? '')
+
       setSignatureError(msg)
       toast({ title: 'Sign Error', description: msg, variant: 'destructive' })
     } finally {
@@ -246,7 +252,13 @@ export function GasFreePanel() {
         })
       }
     } catch (err) {
-      const msg = `Signing failed: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : ((err as Record<string, string>)?.message ?? '')
+
       setSubmitResult(`Error: ${msg}`)
       toast({ title: 'Submit Error', description: msg, variant: 'destructive' })
     } finally {
