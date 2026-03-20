@@ -66,7 +66,7 @@ assembly {
 }
 ```
 
-主网完整 chainId 为 `0x000000002b6653dc`，裁剪后为 `0x2b6653dc`（十进制 728127452）。
+主网完整 chainId 为 `0x000000002b6653dc`，裁剪后为 `0x2b6653dc`（十进制 728126428）。
 
 > ⚠️ **这是最常见的坑**：链上合约、前端 SDK、钱包三端必须都使用裁剪后的值，任何一端不一致都会导致签名验证失败。
 
@@ -202,7 +202,7 @@ bytes32 domainSeparator = keccak256(abi.encode(
 
 | 网络          | chainId（裁剪后十六进制） | 十进制     |
 | ------------- | ------------------------- | ---------- |
-| TRON 主网     | `0x2b6653dc`              | 728127452  |
+| TRON 主网     | `0x2b6653dc`              | 728126428  |
 | Nile 测试网   | `0xcd8690dc`              | 3448148188 |
 | Shasta 测试网 | `0x94a9059e`              | 2494104990 |
 
@@ -1370,14 +1370,14 @@ function splitSignature(signature: string): {
 
 | 网络          | 完整 chainId (hex)   | TIP-712 chainId（`& 0xffffffff`） | 十进制     |
 | ------------- | -------------------- | --------------------------------- | ---------- |
-| TRON 主网     | `0x000000002b6653dc` | `0x2b6653dc`                      | 728127452  |
+| TRON 主网     | `0x000000002b6653dc` | `0x2b6653dc`                      | 728126428  |
 | Nile 测试网   | `0x00000000cd8690dc` | `0xcd8690dc`                      | 3448148188 |
 | Shasta 测试网 | `0x0000000094a9059e` | `0x94a9059e`                      | 2494104990 |
 
 ```javascript
 // JavaScript 中获取各网络的裁剪后 chainId
 const CHAIN_IDS = {
-  mainnet: Number("0x2b6653dc"),   // 728127452
+  mainnet: Number("0x2b6653dc"),   // 728126428
   nile:    Number("0xcd8690dc"),   // 3448148188
   shasta:  Number("0x94a9059e"),   // 2494104990
 };
