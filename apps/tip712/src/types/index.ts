@@ -65,7 +65,7 @@ export interface SignatureResult {
 export const TRON_CHAINS = {
   mainnet: {
     name: 'TRON Mainnet',
-    chainId: 0x2b6653dc,
+    chainId: 728126428,
     chainIdHex: '0x2b6653dc',
     fullNodeHost: 'https://api.trongrid.io',
   },
@@ -121,7 +121,7 @@ export const TIP712_PRESETS = {
       domain: {
         name: 'GasFreeController',
         version: 'V1.0.0',
-        chainId: '0x2b6653dc',
+        chainId: 728126428,
         verifyingContract: 'TFFAMQLZybALaLb4uxHA9RBE7pxhUAjF3U',
       },
       types: {
@@ -141,11 +141,11 @@ export const TIP712_PRESETS = {
       message: {
         token: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
         serviceProvider: 'TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp',
-        user: '',
-        receiver: '',
+        user: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm',
+        receiver: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm',
         value: '1000000',
         maxFee: '200000',
-        deadline: '',
+        deadline: Date.now() + 3600 * 1000, // 1 hour from now
         version: '1',
         nonce: '0',
       },
@@ -156,7 +156,7 @@ export const TIP712_PRESETS = {
     payload: {
       domain: {
         name: 'Permit2',
-        chainId: '0x2b6653dc',
+        chainId: 728126428,
         verifyingContract: 'TJhMXTHQHeQyMD7TcKQFqAePNgG4b31H9m',
       },
       types: {
@@ -177,9 +177,9 @@ export const TIP712_PRESETS = {
           token: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
           amount: '1000000',
         },
-        spender: '',
+        spender: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm',
         nonce: '0',
-        deadline: '',
+        deadline: Date.now() + 3600 * 1000, // 1 hour from now
       },
     },
   },
@@ -189,8 +189,8 @@ export const TIP712_PRESETS = {
       domain: {
         name: 'MyToken',
         version: '1',
-        chainId: '0x2b6653dc',
-        verifyingContract: '',
+        chainId: 728126428,
+        verifyingContract: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
       },
       types: {
         Permit: [
@@ -203,11 +203,11 @@ export const TIP712_PRESETS = {
       },
       primaryType: 'Permit',
       message: {
-        owner: '',
-        spender: '',
+        owner: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm',
+        spender: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm',
         value: '1000000000',
         nonce: '0',
-        deadline: '',
+        deadline: Date.now() + 3600 * 1000, // 1 hour from now
       },
     },
   },
@@ -217,7 +217,7 @@ export const TIP712_PRESETS = {
       domain: {
         name: 'TRON Mail',
         version: '1',
-        chainId: '0x2b6653dc',
+        chainId: 728126428,
         verifyingContract: 'TUe6BwpA7sVTDKaJQoia7FWZpC9sK8WM2t',
       },
       types: {
@@ -233,8 +233,8 @@ export const TIP712_PRESETS = {
       },
       primaryType: 'Mail',
       message: {
-        from: { name: 'Alice', wallet: '' },
-        to: { name: 'Bob', wallet: '' },
+        from: { name: 'Alice', wallet: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm' },
+        to: { name: 'Bob', wallet: 'TVo8VCHmkD3emm2WRD6Ay47FHEKEWcjpPm' },
         contents: 'Hello, Bob!',
       },
     },

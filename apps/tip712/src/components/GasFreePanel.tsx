@@ -63,7 +63,7 @@ export function GasFreePanel() {
   const [serviceProvider, setServiceProvider] = useState(
     'TGzz8gjYiYRqpfmDwnLxfgPuLVNmpCswVp',
   )
-  const [receiver, setReceiver] = useState('')
+  const [receiver, setReceiver] = useState(walletAddress)
   const [value, setValue] = useState('1000000')
   const [maxFee, setMaxFee] = useState('200000')
   const [deadline, setDeadline] = useState('')
@@ -89,6 +89,13 @@ export function GasFreePanel() {
       setGasFreeAddress('')
     }
   }, [walletAddress, network, setGasFreeAddress])
+
+  // Sync receiver with wallet address when wallet connects (if not manually changed)
+  useEffect(() => {
+    if (walletAddress) {
+      setReceiver((prev) => (prev === '' ? walletAddress : prev))
+    }
+  }, [walletAddress])
 
   // Set default deadline
   useEffect(() => {
