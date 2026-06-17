@@ -12,6 +12,10 @@ This Turborepo includes the following packages/apps:
 - `bip322`: Standalone BIP-322 message signing test application (Port 3001)
 - `bip370`: Standalone BIP-370 PSBT test application (Port 3002)
 - `cosmos`: Standalone Cosmos blockchain test application (Port 3003)
+- `ton`: Standalone TON wallet and TonConnect bridge test application (Port 3004)
+- `imtoken`: Standalone imToken wallet integration test application (Port 3005)
+- `tip712`: Standalone TRON TIP-712 signing test application (Port 3006)
+- `tron`: Standalone TRON transaction preview test application (Port 3007)
 - `@repo/ui`: Shared React component library with shadcn/ui components
 - `@repo/eslint-config`: Shared ESLint configurations
 - `@repo/typescript-config`: Shared TypeScript configurations
@@ -41,6 +45,18 @@ pnpm dev:bip370
 # Start Cosmos app on port 3003
 pnpm dev:cosmos
 
+# Start TON app on port 3004
+pnpm dev:ton
+
+# Start imToken app on port 3005
+pnpm dev:imtoken
+
+# Start TIP-712 app on port 3006
+pnpm dev:tip712
+
+# Start TRON preview app on port 3007
+pnpm dev:tron
+
 # Start all apps in parallel
 pnpm dev:all
 ```
@@ -53,6 +69,10 @@ When running in development mode, the apps are available at:
 - **BIP-322**: http://localhost:3001
 - **BIP-370**: http://localhost:3002
 - **Cosmos**: http://localhost:3003
+- **TON**: http://localhost:3004
+- **imToken**: http://localhost:3005
+- **TIP-712**: http://localhost:3006
+- **TRON Preview**: http://localhost:3007
 
 ### Build
 
@@ -85,7 +105,11 @@ apps/
 ├── main/           # Navigation app (Port 3000)
 ├── bip322/         # BIP-322 test app (Port 3001)
 ├── bip370/         # BIP-370 test app (Port 3002)
-└── cosmos/         # Cosmos test app (Port 3003)
+├── cosmos/         # Cosmos test app (Port 3003)
+├── ton/            # TON test app (Port 3004)
+├── imtoken/        # imToken test app (Port 3005)
+├── tip712/         # TIP-712 test app (Port 3006)
+└── tron/           # TRON transaction preview app (Port 3007)
 
 packages/
 ├── ui/             # Shared UI components (shadcn/ui)
@@ -122,6 +146,13 @@ packages/
 - Chain registry integration
 - Interchain UI components
 - Multi-chain support
+
+### TRON Preview App
+
+- TRON wallet connection through injected TronWeb providers
+- One-transaction unknown contract signing preview with USDT approval intent in calldata
+- Standard USDT approve control transaction for preview comparison
+- Sign-only workflow with no broadcasting
 
 ### Cross-App Theme Synchronization
 

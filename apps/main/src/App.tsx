@@ -49,6 +49,12 @@ function AppContent() {
       url: getAppUrl('tip712', 3006),
       icon: 'T',
     },
+    {
+      name: 'TRON',
+      description: 'TRON contract signing preview lab',
+      url: getAppUrl('tron', 3007),
+      icon: 'T',
+    },
   ]
 
   return (
@@ -108,8 +114,10 @@ function AppContent() {
               <div>pnpm dev:bip322 # Port 3001</div>
               <div>pnpm dev:bip370 # Port 3002</div>
               <div>pnpm dev:cosmos # Port 3003</div>
-              <div>pnpm dev:imtoken # Port 3004</div>
-              <div>pnpm dev:ton # Port 3005</div>
+              <div>pnpm dev:ton # Port 3004</div>
+              <div>pnpm dev:imtoken # Port 3005</div>
+              <div>pnpm dev:tip712 # Port 3006</div>
+              <div>pnpm dev:tron # Port 3007</div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               💡 Each DApp runs independently in its own window

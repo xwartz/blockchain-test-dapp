@@ -15,6 +15,7 @@
     "dev:ton": "pnpm --filter ton dev",
     "dev:imtoken": "pnpm --filter imtoken dev",
     "dev:tip712": "pnpm --filter tip712 dev",
+    "dev:tron": "pnpm --filter tron dev",
     "dev:all": "turbo dev --parallel",
     "lint": "turbo lint",
     "ui:add": "pnpm --filter ui ui:add",
